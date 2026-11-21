@@ -1,4 +1,4 @@
-# 📕 TypeGrapher (v2.6)
+# 📕 TypeGrapher
 
 > **클래식 레드 수동 타자기와 한국식 정통 20×20 원고지 감성을 결합한 초경량 네이티브 macOS 마크다운 & 출판 스튜디오**  
 > *A Distraction-Free, Tactile Markdown & Manuscript Studio for Mac OS X 10.7 Lion through the Latest macOS.*
