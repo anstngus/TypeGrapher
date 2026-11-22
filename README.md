@@ -6,7 +6,6 @@
 ![Platform](https://img.shields.io/badge/Platform-Mac%20OS%20X%2010.7%2B%20(x86__64)-crimson?style=flat-square&logo=apple)
 ![Architecture](https://img.shields.io/badge/Engine-Objective--C%20Cocoa%20%2B%20WebKit%20(ES5)-222222?style=flat-square)
 ![Dependencies](https://img.shields.io/badge/Dependencies-Zero%20(100%25%20Offline%20Native)-success?style=flat-square)
-![Version](https://img.shields.io/badge/Version-2.6%20(Build%208)-d92b2b?style=flat-square)
 
 ---
 
