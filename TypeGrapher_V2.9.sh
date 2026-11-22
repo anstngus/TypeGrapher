@@ -1,5 +1,5 @@
 setopt NO_BANG_HIST
-cat << 'PYEOF' > /tmp/build_typegrapher_v28.py
+cat << 'PYEOF' > /tmp/build_typegrapher_v29.py
 import os, shutil, subprocess, plistlib
 
 desktop = os.path.expanduser("~/Desktop")
@@ -399,7 +399,7 @@ html_content = r'''<!DOCTYPE html>
   .toolbar.hidden { display: none; }
   .tool-btn {
     background: transparent; border: 1px solid transparent; color: inherit;
-    opacity: 0.8; padding: 3px 7px; margin-right: 2px;
+    opacity: 0.8; padding: 3px 5px; margin-right: 1px;
     border-radius: 4px; font-size: 11.5px; font-weight: 600;
     cursor: pointer; white-space: nowrap;
   }
@@ -410,7 +410,7 @@ html_content = r'''<!DOCTYPE html>
     opacity: 1; background-color: #d92b2b; color: #ffffff !important;
   }
   body.theme-light .tool-btn:hover { color: #c81e1e; }
-  .tool-sep { width: 1px; height: 16px; background-color: #554848; margin: 0 5px; opacity: 0.4; }
+  .tool-sep { width: 1px; height: 16px; background-color: #554848; margin: 0 3px; opacity: 0.4; }
 
   /* Unified Single-Pane Live Editor & Viewer */
   .live-editor-scroll {
@@ -769,6 +769,26 @@ html_content = r'''<!DOCTYPE html>
   }
   .live-editor-canvas .task-done { text-decoration: line-through; opacity: 0.6; }
 
+  /* v2.9 마크다운: 형광펜 · 표 · 중첩 목록 */
+  .live-editor-canvas mark { background-color: rgba(255, 214, 102, 0.55); color: inherit; padding: 0 2px; border-radius: 2px; }
+  body.theme-dark .live-editor-canvas mark { background-color: rgba(255, 190, 40, 0.32); color: #fff6df; }
+  .live-editor-canvas ul ul, .live-editor-canvas ol ol, .live-editor-canvas ul ol, .live-editor-canvas ol ul { margin: 2px 0 2px 0; }
+  .live-editor-canvas ul { list-style-type: disc; }
+  .live-editor-canvas ul ul { list-style-type: circle; }
+  .live-editor-canvas ul ul ul { list-style-type: square; }
+  .live-editor-canvas li > .task-item, .live-editor-canvas ul ul .task-item { margin-left: -22px; }
+  .live-editor-canvas table { border-collapse: collapse; margin: 0.6em 0; max-width: 100%; }
+  .live-editor-canvas th, .live-editor-canvas td {
+    border: 1px solid rgba(217, 43, 43, 0.32); padding: 4px 10px; min-width: 56px;
+    vertical-align: top; line-height: 1.7; text-align: left;
+  }
+  .live-editor-canvas th { font-weight: 700; background-color: rgba(217, 43, 43, 0.09); }
+  body.theme-light .live-editor-canvas th, body.theme-light .live-editor-canvas td { border-color: #d8c9c0; }
+  .live-editor-canvas.style-manuscript table { margin: 0; }
+  .live-editor-canvas.style-manuscript th,
+  .live-editor-canvas.style-manuscript td { line-height: 36px; padding: 0 8px; border-top: 0; border-bottom: 0; }
+  .live-editor-canvas.style-manuscript mark { line-height: 1; }
+
   .statusbar {
     position: absolute; bottom: 0; left: 0; right: 0; height: 26px;
     padding: 0 14px; font-size: 11px;
@@ -914,7 +934,9 @@ html_content = r'''<!DOCTYPE html>
   html.tg-print-mono .live-editor-canvas pre,
   html.tg-print-mono .live-editor-canvas code,
   html.tg-print-mono .live-editor-canvas blockquote,
+  html.tg-print-mono .live-editor-canvas th,
   html.tg-print-mono .live-editor-canvas .wiki-tag { background-color: #f1f1f1 !important; }
+  html.tg-print-mono .live-editor-canvas mark { background-color: #dddddd !important; }
   html.tg-print-mono .live-editor-canvas.style-manuscript {
     border-color: #333333 !important;
     background-image: -webkit-linear-gradient(top, transparent 35px, #8a8a8a 35px, #8a8a8a 36px) !important;
@@ -1084,15 +1106,17 @@ html_content = r'''<!DOCTYPE html>
         <button class="tool-btn" data-Action="h3" title="제목 3 (### + 스페이스바)">H3</button>
         <button class="tool-btn" data-Action="p" title="일반 본문 단락">본문</button>
         <div class="tool-sep"></div>
-        <button class="tool-btn" data-Action="bold" title="굵게 (Cmd + B)"><b>B</b></button>
-        <button class="tool-btn" data-Action="italic" title="기울임 (Cmd + I)"><i>I</i></button>
-        <button class="tool-btn" data-Action="strike" title="취소선"><s>S</s></button>
+        <button class="tool-btn" data-Action="bold" title="굵게 (Cmd + B 또는 **글자**)"><b>B</b></button>
+        <button class="tool-btn" data-Action="italic" title="기울임 (Cmd + I 또는 *글자*)"><i>I</i></button>
+        <button class="tool-btn" data-Action="strike" title="취소선 (~~글자~~)"><s>S</s></button>
         <div class="tool-sep"></div>
         <button class="tool-btn" data-Action="quote" title="인용구 (> + 스페이스바)">&ldquo; 인용</button>
-        <button class="tool-btn" data-Action="ul" title="글머리 기호 목록 (- + 스페이스바)">&bull; 목록</button>
+        <button class="tool-btn" data-Action="ul" title="글머리 기호 목록 (- + 스페이스바 · Tab 들여쓰기 · Shift+Tab 내어쓰기)">&bull; 목록</button>
+        <button class="tool-btn" data-Action="ol" title="번호 목록 (1. + 스페이스바 · Enter 로 다음 번호 · 빈 줄에서 Enter 로 끝내기)">1. 번호</button>
         <button class="tool-btn" data-Action="task" title="할 일 체크박스 (- [ ] + 스페이스바)">&#9745; 할일</button>
         <div class="tool-sep"></div>
-        <button class="tool-btn" data-Action="code" title="코드 블록">&lt;/&gt; 코드</button>
+        <button class="tool-btn" data-Action="code" title="코드 블록 (``` + Enter, 언어 이름도 가능: ```js · 나가기: 마지막 줄에 ``` + Enter 또는 Command+Enter)">&lt;/&gt; 코드</button>
+        <button class="tool-btn" data-Action="table" title="표 (| 제목 | 제목 | + Enter · Tab 다음 칸 · Enter 아래 칸)">&#9638; 표</button>
         <button class="tool-btn" data-Action="wikilink" title="내부 문서 링크 [[노트제목]]">[[링크]]</button>
         <button class="tool-btn" data-Action="hr" title="구분선 삽입">&mdash; 구분선</button>
         <button class="tool-btn" data-Action="timestamp" title="현재 날짜 삽입">&#128337; 일시</button>
@@ -1681,218 +1705,756 @@ html_content = r'''<!DOCTYPE html>
     elStatsModalBackdrop.className = 'modal-backdrop show';
   }
 
-  /* 1. Markdown -> Live Editable DOM Parser */
-  function parseInline(text) {
-    var s = escapeHtml(text);
-    s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
-    s = s.replace(/\[\[([^\]]+)\]\]/g, '<span class="wiki-tag" contenteditable="false" data-wikilink="$1">[[$1]]</span>');
-    s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-    s = s.replace(/\*\*\*([^*]+)\*\*\*/g, '<strong><em>$1</em></strong>');
-    s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-    s = s.replace(/__([^_]+)__/g, '<strong>$1</strong>');
-    s = s.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-    s = s.replace(/_([^_]+)_/g, '<em>$1</em>');
-    s = s.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+  /* ==========================================================================
+     v2.9 마크다운 엔진 (읽기 · 저장)
+     - 읽기: 중첩 목록(들여쓰기) · 번호 목록의 시작 번호 · 할 일 · 인용(안에 목록 · 제목 가능) · 표 ·
+       코드 블록(언어 이름 보존) · 구분선 · 제목 · 굵게/기울임/취소선/형광펜/코드/링크/위키 링크 · 역슬래시 이스케이프
+     - 저장: 화면에 보이는 그대로 다시 읽히도록 씀 (빈 줄 개수, 코드 블록 안의 빈 줄, 표, 들여쓰기 보존)
+     ========================================================================== */
+  var MD_WORD = 'A-Za-z0-9_\\u00C0-\\uFFFF';
+  var MD_BLOCK_TAGS = { P: 1, DIV: 1, H1: 1, H2: 1, H3: 1, H4: 1, H5: 1, H6: 1, UL: 1, OL: 1, LI: 1, BLOCKQUOTE: 1,
+                        PRE: 1, HR: 1, TABLE: 1, THEAD: 1, TBODY: 1, TFOOT: 1, TR: 1, TD: 1, TH: 1 };
+
+  function mdIsBlock(n) {
+    return !!(n && n.nodeType === 1 && MD_BLOCK_TAGS[n.tagName.toUpperCase()] === 1);
+  }
+
+  function mdSpaces(n) {
+    return n > 0 ? new Array(n + 1).join(' ') : '';
+  }
+
+  /* 굵게 · 기울임: CommonMark 의 '구분 기호 줄' 규칙 (*, _ 의 열고 닫음 판정 + 3의 규칙)
+     - **가 *나***, ***가* 나**, *가***나**, snake_case(단어 안의 _ 는 기울임 아님) 같은 경우를 표준대로 읽음 */
+  var MD_PUNCT_RE = /[!-\/:-@\[-`{-~\u0001-\u0004\u00A1-\u00BF\u2010-\u2027\u2030-\u205E\u3000-\u303F\uFF01-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF40\uFF5B-\uFF65]/;
+  var MD_SPACE_RE = /[\s\u00A0\u3000]/;
+  /* 한글 · 한자 · 가나: 기호 바로 옆이 이 글자면 문장부호가 끼어 있어도 서식을 열고 닫을 수 있게 함
+     ('**[[노트]]**는', '**"인용"**은' 처럼 조사가 바로 붙는 한국어 문장을 위해: CJK 친화 규칙) */
+  var MD_CJK_RE = /[\u1100-\u11FF\u3040-\u30FF\u3130-\u318F\u3400-\u4DBF\u4E00-\u9FFF\uAC00-\uD7AF\uF900-\uFAFF]/;
+
+  function mdEmphasis(s) {
+    var toks = [], i = 0, n = s.length, j, ch;
+    while (i < n) {
+      ch = s.charAt(i);
+      if (ch === '*' || ch === '_') {
+        j = i;
+        while (j < n && s.charAt(j) === ch) j++;
+        var prev = i > 0 ? s.charAt(i - 1) : ' ', next = j < n ? s.charAt(j) : ' ';
+        var ps = MD_SPACE_RE.test(prev), ns = MD_SPACE_RE.test(next);
+        var pp = MD_PUNCT_RE.test(prev), np = MD_PUNCT_RE.test(next);
+        var pc = MD_CJK_RE.test(prev), nc = MD_CJK_RE.test(next);
+        var lf = !ns && (!np || ps || pp || pc);
+        var rf = !ps && (!pp || ns || np || nc);
+        toks.push({
+          d: true, ch: ch, orig: j - i, left: j - i,
+          open: ch === '*' ? lf : (lf && (!rf || pp)),
+          close: ch === '*' ? rf : (rf && (!lf || np)),
+          opens: [], closes: [], gone: false
+        });
+        i = j;
+      } else {
+        j = i;
+        while (j < n && s.charAt(j) !== '*' && s.charAt(j) !== '_') j++;
+        toks.push({ d: false, text: s.slice(i, j) });
+        i = j;
+      }
+    }
+    var c, o, k;
+    for (c = 0; c < toks.length; c++) {
+      var cl = toks[c];
+      if (!cl.d || !cl.close || cl.gone) continue;
+      while (cl.left > 0) {
+        var found = -1;
+        for (o = c - 1; o >= 0; o--) {
+          var op = toks[o];
+          if (!op.d || op.gone || op.left === 0 || op.ch !== cl.ch || !op.open) continue;
+          /* 3의 규칙: 열고 닫기가 둘 다 되는 기호끼리는 길이 합이 3의 배수면 짝이 아님 */
+          if ((op.close || cl.open) && (op.orig + cl.orig) % 3 === 0 && !(op.orig % 3 === 0 && cl.orig % 3 === 0)) continue;
+          found = o;
+          break;
+        }
+        if (found < 0) break;
+        var opn = toks[found];
+        var use = (opn.left >= 2 && cl.left >= 2) ? 2 : 1;
+        var tag = use === 2 ? 'strong' : 'em';
+        opn.opens.push(tag);
+        cl.closes.push(tag);
+        opn.left -= use;
+        cl.left -= use;
+        for (k = found + 1; k < c; k++) if (toks[k].d) toks[k].gone = true;   /* 사이에 남은 기호는 글자 그대로 */
+      }
+    }
+    var out = '', t, lit;
+    for (k = 0; k < toks.length; k++) {
+      t = toks[k];
+      if (!t.d) { out += t.text; continue; }
+      lit = new Array(t.left + 1).join(t.ch);
+      /* 닫는 태그(안쪽부터) → 남은 기호 → 여는 태그(바깥부터) */
+      for (o = 0; o < t.closes.length; o++) out += '</' + t.closes[o] + '>';
+      out += lit;
+      for (o = t.opens.length - 1; o >= 0; o--) out += '<' + t.opens[o] + '>';
+    }
+    return out;
+  }
+
+  /* 글자 서식 전체: 굵게 · 기울임(위 규칙) + 취소선 ~~ + 형광펜 == */
+  function mdInlineFormat(s) {
+    s = mdEmphasis(s);
+    s = s.replace(/~~([^\s~](?:[^~]*?[^\s~])?)~~/g, '<del>$1</del>');
+    s = s.replace(/==([^\s=](?:[^=]*?[^\s=])?)==/g, '<mark>$1</mark>');
     return s;
   }
 
-  function parseMarkdownToHTML(md) {
-    if (!md || md.trim() === '') return '<p><br></p>';
-    var lines = md.replace(/\r\n/g, '\n').split('\n');
-    var html = [];
-    var inCodeBlock = false;
-    var codeBuffer = [];
-    var inUl = false;
-    var inOl = false;
-    var inBlockquote = false;
+  /* 코드 `...` 찾기: \` 로 막은 백틱은 코드의 시작이 아님. 여는 백틱 수와 같은 수의 백틱에서 닫힘 (``a`b`` 처럼) */
+  function mdStashCode(s, put) {
+    var out = '', i = 0, n = s.length, j, k, run, fence, body;
+    while (i < n) {
+      var ch = s.charAt(i);
+      if (ch === '\\' && i + 1 < n) { out += ch + s.charAt(i + 1); i += 2; continue; }
+      if (ch !== '`') { out += ch; i++; continue; }
+      j = i;
+      while (j < n && s.charAt(j) === '`') j++;
+      run = j - i;
+      fence = new Array(run + 1).join('`');
+      k = j;
+      var close = -1;
+      while ((k = s.indexOf(fence, k)) !== -1) {
+        var e = k + run;
+        if (s.charAt(e) === '`') { while (s.charAt(e) === '`') e++; k = e; continue; }   /* 더 긴 백틱 줄은 닫는 기호가 아님 */
+        close = k;
+        break;
+      }
+      if (close === -1) { out += fence; i = j; continue; }
+      body = s.slice(j, close);
+      if (/^ [\s\S]*[^ ][\s\S]* $/.test(body)) body = body.slice(1, -1);
+      out += put('<code>' + escapeHtml(body) + '</code>');
+      i = close + run;
+    }
+    return out;
+  }
 
+  /* 1. Markdown -> Live Editable DOM Parser */
+  function parseInline(text) {
+    var stash = [];
+    function put(html) {
+      stash.push(html);
+      return '\u0001' + (stash.length - 1) + '\u0002';
+    }
+    var s = String(text == null ? '' : text).replace(/[\u0001-\u0004]/g, '');
+    /* 코드 · 위키 링크: 안쪽 글자는 서식으로 해석하지 않음 */
+    s = mdStashCode(s, put);
+    s = s.replace(/\[\[([^\[\]]+)\]\]/g, function (m, t) {
+      var e = escapeHtml(t);
+      return put('<span class="wiki-tag" contenteditable="false" data-wikilink="' + e + '">[[' + e + ']]</span>');
+    });
+    /* 역슬래시 이스케이프: \* 는 별표 글자 그대로 */
+    s = s.replace(/\\([\\`*_~=\[\]()#+\-.!|>{}])/g, function (m, c) { return '\u0003' + c.charCodeAt(0) + '\u0004'; });
+    s = escapeHtml(s);
+    /* 링크 [글](주소): 글은 따로 서식을 읽고, 링크 전체는 한 덩어리로 (주소 안의 _ 가 기울임이 되지 않도록) */
+    s = s.replace(/\[([^\[\]]+)\]\(([^()\s]+)\)/g, function (m, t, u) {
+      return put('<a href="' + u + '" target="_blank" rel="noopener">' + mdInlineFormat(t) + '</a>');
+    });
+    s = mdInlineFormat(s);
+    var guard = 0;
+    while (s.indexOf('\u0001') !== -1 && guard++ < 6) {
+      s = s.replace(/\u0001(\d+)\u0002/g, function (m, i) { return stash[+i]; });
+    }
+    s = s.replace(/\u0003(\d+)\u0004/g, function (m, c) { return escapeHtml(String.fromCharCode(+c)); });
+    return s;
+  }
+
+  function mdIndentWidth(ws) {
+    var n = 0, i;
+    for (i = 0; i < ws.length; i++) n += (ws.charAt(i) === '\t') ? 4 - (n % 4) : 1;
+    return n;
+  }
+
+  /* 표의 한 줄을 칸으로 나눔 (\| 는 칸 구분이 아님) */
+  function mdSplitTableRow(line) {
+    var s = line.replace(/^\s*\|/, '');
+    if (/[^\\]\|\s*$/.test(s) || /^\|\s*$/.test(s)) s = s.replace(/\|\s*$/, '');
+    var cells = [], cur = '', i, ch;
+    for (i = 0; i < s.length; i++) {
+      ch = s.charAt(i);
+      if (ch === '\\' && s.charAt(i + 1) === '|') { cur += '\\|'; i++; continue; }
+      if (ch === '|') { cells.push(cur.replace(/^\s+|\s+$/g, '')); cur = ''; continue; }
+      cur += ch;
+    }
+    cells.push(cur.replace(/^\s+|\s+$/g, ''));
+    return cells;
+  }
+
+  function mdIsTableSep(line) {
+    return line.indexOf('-') !== -1 && /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/.test(line) &&
+      (line.indexOf('|') !== -1);
+  }
+
+  var MD_HR_RE = /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t]*$/;
+  var MD_FENCE_RE = /^ {0,3}(`{3,}|~{3,})(.*)$/;
+  var MD_HEAD_RE = /^ {0,3}(#{1,6})[ \t]+(.*)$/;
+  var MD_QUOTE_RE = /^ {0,3}>/;
+  /* 번호 목록은 1~3자리 숫자만: '2026. 11. 22. 일기' 같은 날짜 줄이 목록으로 바뀌지 않도록 */
+  var MD_LIST_RE = /^([ \t]*)([-*+]|\d{1,3}[.)])[ \t]+(.*)$/;
+  var MD_LIST_EMPTY_RE = /^([ \t]*)([-*+]|\d{1,3}[.)])$/;
+  var MD_TASK_RE = /^\[([ xX])\](?:[ \t]+(.*))?$/;
+
+  function parseMarkdownToHTML(md) {
+    if (!md || md.replace(/\s+/g, '') === '') return '<p><br></p>';
+    var lines = md.replace(/\r\n?/g, '\n').split('\n');
+    var html = [];
+    var stack = [];   /* 열린 목록: { tag, indent } (각 단계마다 <li> 하나가 열려 있음) */
+    var i, line, m;
+
+    function closeTop() {
+      var t = stack.pop();
+      html.push('</li></' + t.tag + '>');
+    }
     function closeLists() {
-      if (inUl) { html.push('</ul>'); inUl = false; }
-      if (inOl) { html.push('</ol>'); inOl = false; }
-      if (inBlockquote) { html.push('</blockquote>'); inBlockquote = false; }
+      while (stack.length) closeTop();
+    }
+    function openList(tag, start, indent, mark) {
+      html.push('<' + tag + ((tag === 'ol' && start !== 1) ? ' start="' + start + '"' : '') + '>');
+      stack.push({ tag: tag, indent: indent, mark: mark });
     }
 
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i];
-      if (/^```/.test(line.trim())) {
+    for (i = 0; i < lines.length; i++) {
+      line = lines[i];
+
+      /* 코드 블록 ``` / ~~~ (언어 이름 보존) */
+      m = line.match(MD_FENCE_RE);
+      if (m && !(m[1].charAt(0) === '`' && m[2].indexOf('`') !== -1)) {
         closeLists();
-        if (!inCodeBlock) {
-          inCodeBlock = true;
-          codeBuffer = [];
-        } else {
-          html.push('<pre><code>' + escapeHtml(codeBuffer.join('\n')) + '</code></pre>');
-          inCodeBlock = false;
+        var fence = m[1], lang = m[2].replace(/^\s+|\s+$/g, ''), code = [], j;
+        for (j = i + 1; j < lines.length; j++) {
+          var close = lines[j].match(/^ {0,3}(`{3,}|~{3,})[ \t]*$/);
+          if (close && close[1].charAt(0) === fence.charAt(0) && close[1].length >= fence.length) break;
+          code.push(lines[j]);
         }
+        html.push('<pre' + (lang ? ' data-lang="' + escapeHtml(lang) + '"' : '') + '><code>' +
+          (code.length ? escapeHtml(code.join('\n')) : '') + '\n</code></pre>');
+        i = j;
         continue;
       }
-      if (inCodeBlock) { codeBuffer.push(line); continue; }
 
-      if (line.trim() === '') {
+      if (/^\s*$/.test(line)) {
         closeLists();
         html.push('<p><br></p>');
         continue;
       }
 
-      if (/^(---|\*\*\*|___)\s*$/.test(line.trim())) {
+      if (MD_HR_RE.test(line)) {
         closeLists();
         html.push('<hr>');
         continue;
       }
 
-      var hMatch = line.match(/^(#{1,6})\s+(.*)$/);
-      if (hMatch) {
+      m = line.match(MD_HEAD_RE);
+      if (m) {
         closeLists();
-        var level = hMatch[1].length;
-        html.push('<h' + level + '>' + (parseInline(hMatch[2]) || '<br>') + '</h' + level + '>');
+        var level = m[1].length;
+        var htext = m[2].replace(/[ \t]+#+[ \t]*$/, '').replace(/^#+[ \t]*$/, '');
+        html.push('<h' + level + '>' + (parseInline(htext) || '<br>') + '</h' + level + '>');
         continue;
       }
 
-      var bqMatch = line.match(/^>\s?(.*)$/);
-      if (bqMatch) {
-        if (inUl) { html.push('</ul>'); inUl = false; }
-        if (inOl) { html.push('</ol>'); inOl = false; }
-        if (!inBlockquote) { html.push('<blockquote>'); inBlockquote = true; }
-        html.push('<p>' + (parseInline(bqMatch[1]) || '<br>') + '</p>');
-        continue;
-      } else if (inBlockquote) {
-        html.push('</blockquote>');
-        inBlockquote = false;
-      }
-
-      var taskMatch = line.match(/^\s*[-*]\s+\[([ xX])\]\s*(.*)$/);
-      if (taskMatch) {
-        if (inOl) { html.push('</ol>'); inOl = false; }
-        if (!inUl) { html.push('<ul>'); inUl = true; }
-        var checked = taskMatch[1].toLowerCase() === 'x';
-        html.push(
-          '<li class="task-item' + (checked ? ' task-done' : '') + '">' +
-          '<input type="checkbox" contenteditable="false"' + (checked ? ' checked' : '') + '>' +
-          '<span>' + (parseInline(taskMatch[2]) || '<br>') + '</span></li>'
-        );
+      /* 인용: 이어지는 > 줄을 모아, 안쪽을 다시 마크다운으로 읽음 (인용 안의 목록 · 제목 · 인용) */
+      if (MD_QUOTE_RE.test(line)) {
+        closeLists();
+        var inner = [];
+        while (i < lines.length && MD_QUOTE_RE.test(lines[i])) {
+          inner.push(lines[i].replace(/^ {0,3}> ?/, ''));
+          i++;
+        }
+        i--;
+        html.push('<blockquote>' + parseMarkdownToHTML(inner.join('\n')) + '</blockquote>');
         continue;
       }
 
-      var ulMatch = line.match(/^\s*[-*+]\s+(.*)$/);
-      if (ulMatch) {
-        if (inOl) { html.push('</ol>'); inOl = false; }
-        if (!inUl) { html.push('<ul>'); inUl = true; }
-        html.push('<li>' + (parseInline(ulMatch[1]) || '<br>') + '</li>');
-        continue;
+      /* 표: 머리 줄 + 구분 줄 (| --- | :---: |) + 본문 줄들 */
+      if (line.indexOf('|') !== -1 && i + 1 < lines.length && mdIsTableSep(lines[i + 1])) {
+        var head = mdSplitTableRow(line), sep = mdSplitTableRow(lines[i + 1]);
+        if (head.length === sep.length) {
+          closeLists();
+          var rows = [], aligns = [], k, r, cols = head.length;
+          for (k = 0; k < sep.length; k++) {
+            var sc = sep[k];
+            aligns.push((sc.charAt(0) === ':' && sc.charAt(sc.length - 1) === ':') ? 'center'
+              : (sc.charAt(sc.length - 1) === ':') ? 'right' : (sc.charAt(0) === ':') ? 'left' : '');
+          }
+          i += 2;
+          while (i < lines.length && lines[i].indexOf('|') !== -1 && !/^\s*$/.test(lines[i])) {
+            rows.push(mdSplitTableRow(lines[i]));
+            if (rows[rows.length - 1].length > cols) cols = rows[rows.length - 1].length;
+            i++;
+          }
+          i--;
+          var t = ['<table><thead><tr>'];
+          for (k = 0; k < cols; k++) {
+            t.push('<th' + (aligns[k] ? ' style="text-align: ' + aligns[k] + ';"' : '') + '>' + (parseInline(head[k] || '') || '<br>') + '</th>');
+          }
+          t.push('</tr></thead><tbody>');
+          for (r = 0; r < rows.length; r++) {
+            t.push('<tr>');
+            for (k = 0; k < cols; k++) {
+              t.push('<td' + (aligns[k] ? ' style="text-align: ' + aligns[k] + ';"' : '') + '>' + (parseInline(rows[r][k] || '') || '<br>') + '</td>');
+            }
+            t.push('</tr>');
+          }
+          t.push('</tbody></table>');
+          html.push(t.join(''));
+          continue;
+        }
       }
 
-      var olMatch = line.match(/^\s*\d+\.\s+(.*)$/);
-      if (olMatch) {
-        if (inUl) { html.push('</ul>'); inUl = false; }
-        if (!inOl) { html.push('<ol>'); inOl = true; }
-        html.push('<li>' + (parseInline(olMatch[1]) || '<br>') + '</li>');
+      /* 목록: 들여쓰기(2칸 이상, 탭 = 4칸)로 단계를 나눔 */
+      m = line.match(MD_LIST_RE) || line.match(MD_LIST_EMPTY_RE);
+      if (m) {
+        var indent = mdIndentWidth(m[1]);
+        var marker = m[2];
+        var tag = /\d/.test(marker.charAt(0)) ? 'ol' : 'ul';
+        var mark = marker.charAt(marker.length - 1);   /* - * + 또는 . ) : 바뀌면 새 목록 */
+        var start = tag === 'ol' ? parseInt(marker, 10) : 1;
+        var body = m[3] || '';
+        while (stack.length && indent < stack[stack.length - 1].indent) closeTop();
+        var top = stack.length ? stack[stack.length - 1] : null;
+        if (top && indent >= top.indent + 2) {
+          openList(tag, start, indent, mark);
+        } else if (top) {
+          if (top.tag !== tag || top.mark !== mark) {
+            closeTop();
+            openList(tag, start, indent, mark);
+          } else {
+            html.push('</li>');
+          }
+        } else {
+          openList(tag, start, indent, mark);
+        }
+        var tm = body.match(MD_TASK_RE);
+        if (tm) {
+          var done = tm[1].toLowerCase() === 'x';
+          html.push('<li class="task-item' + (done ? ' task-done' : '') + '">' +
+            '<input type="checkbox" contenteditable="false"' + (done ? ' checked' : '') + '>' +
+            '<span>' + (parseInline(tm[2] || '') || '<br>') + '</span>');
+        } else {
+          html.push('<li>' + (parseInline(body) || '<br>'));
+        }
         continue;
       }
 
       closeLists();
-      html.push('<p>' + parseInline(line) + '</p>');
-    }
-
-    if (inCodeBlock) {
-      html.push('<pre><code>' + escapeHtml(codeBuffer.join('\n')) + '</code></pre>');
+      html.push('<p>' + (parseInline(line) || '<br>') + '</p>');
     }
     closeLists();
-    return html.length > 0 ? html.join('\n') : '<p><br></p>';
+    return html.length > 0 ? html.join('') : '<p><br></p>';
   }
 
   /* 2. Live Editable DOM -> Pure Markdown Serializer */
-  function serializeInlineNodes(parent) {
-    var out = '';
-    var children = parent.childNodes;
-    for (var i = 0; i < children.length; i++) {
-      var n = children[i];
-      if (n.nodeType === 3) {
-        out += n.nodeValue.replace(/\u00A0/g, ' ');
-      } else if (n.nodeType === 1) {
-        var tag = n.tagName.toUpperCase();
-        if (tag === 'BR' || tag === 'INPUT') {
-          continue;
-        } else if (n.className && n.className.indexOf('wiki-tag') !== -1) {
-          var wk = n.getAttribute('data-wikilink') || n.textContent || '';
-          wk = wk.replace(/^\[\[|\]\]$/g, '');
-          out += '[[' + wk + ']]';
-        } else if (tag === 'STRONG' || tag === 'B') {
-          out += '**' + serializeInlineNodes(n) + '**';
-        } else if (tag === 'EM' || tag === 'I') {
-          out += '*' + serializeInlineNodes(n) + '*';
-        } else if (tag === 'DEL' || tag === 'S' || tag === 'STRIKE') {
-          out += '~~' + serializeInlineNodes(n) + '~~';
-        } else if (tag === 'CODE') {
-          out += '`' + serializeInlineNodes(n) + '`';
-        } else if (tag === 'A') {
-          out += '[' + serializeInlineNodes(n) + '](' + (n.getAttribute('href') || '') + ')';
-        } else {
-          out += serializeInlineNodes(n);
+
+  /* 글자 그대로의 * _ ` 등이 다시 열 때 서식으로 바뀌지 않도록, 필요한 경우에만 역슬래시를 붙임 */
+  function mdEscapeText(t) {
+    if (!/[\\`*_~=\[\]]/.test(t)) return t;
+    if (parseInline(t) === escapeHtml(t)) return t;
+    return t.replace(/([\\`*_~=\[\]])/g, '\\$1');
+  }
+
+  /* 문단 첫머리의 글자가 제목 · 목록 · 인용 기호로 읽히지 않도록 */
+  function mdEscapeLineStart(line) {
+    var m = line.match(/^([ \t]*)(#{1,6}[ \t]|>|[-*+][ \t]|[-*+]$|\[[ xX]\][ \t]|\|)/);
+    if (m) return m[1] + '\\' + line.slice(m[1].length);
+    /* ``` · ~~~ 는 코드 블록 시작으로 읽힐 때만 (줄 첫머리의 `` `코드` `` 는 그대로) */
+    m = line.match(MD_FENCE_RE);
+    if (m && !(m[1].charAt(0) === '`' && m[2].indexOf('`') !== -1)) return line.replace(/^( *)/, '$1\\');
+    m = line.match(/^([ \t]*\d{1,3})([.)])([ \t]|$)/);
+    if (m) return m[1] + '\\' + line.slice(m[1].length);
+    if (MD_HR_RE.test(line)) return line.replace(/^( {0,3})/, '$1\\');
+    return line;
+  }
+
+  function mdWrapInline(inner, mark) {
+    if (!inner || /^\s*$/.test(inner)) return inner;
+    var lead = inner.match(/^\s*/)[0], trail = inner.match(/\s*$/)[0];
+    return lead + mark + inner.slice(lead.length, inner.length - trail.length) + mark + trail;
+  }
+
+  /* 한 줄을 쓴 뒤 '다시 읽으면 같은 글자가 보이는가'를 확인하고, 아니면 글자의 기호를 모두 \ 로 막아 다시 씀
+     (서로 다른 글자 조각에 흩어진 * ` ~ = 가 짝을 이뤄 엉뚱한 서식이 되는 것을 막음) */
+  var mdForceEsc = false, mdSawMarkup = false, mdCheckBox = null, mdActive = [];
+
+  function mdTextEsc(t) {
+    if (/[\\`*_~=\[\]]/.test(t)) mdSawMarkup = true;
+    return mdForceEsc ? t.replace(/([\\`*_~=\[\]])/g, '\\$1') : mdEscapeText(t);
+  }
+
+  function mdVisibleText(nodes) {
+    var t = '', i, n;
+    for (i = 0; i < nodes.length; i++) {
+      n = nodes[i];
+      if (n.nodeType === 3) t += n.nodeValue;
+      else if (n.nodeType === 1 && !/^(INPUT|BR|UL|OL)$/i.test(n.tagName)) t += mdVisibleText(n.childNodes);
+    }
+    return t;
+  }
+
+  function mdParsedText(md) {
+    if (!mdCheckBox) mdCheckBox = document.createElement('div');
+    var ls = md.split('\n'), t = '', i;
+    for (i = 0; i < ls.length; i++) {
+      mdCheckBox.innerHTML = parseInline(ls[i]);
+      t += mdCheckBox.textContent;
+    }
+    return t;
+  }
+
+  function mdSameText(a, b) {
+    return a.replace(/[\s\u00A0\u200B]+/g, '') === b.replace(/[\s\u00A0\u200B]+/g, '');
+  }
+
+  /* 줄 조각을 복사해 정리: 서식 없는 span 풀기, 붙어 있는 같은 서식 합치기, 같은 서식 겹침 풀기, 폭 0 글자 빼기 */
+  function mdNormalizeInline(el, active) {
+    var k = el.firstChild, nx, tag, mark, wiki;
+    while (k) {
+      nx = k.nextSibling;
+      if (k.nodeType === 3) {
+        if (k.nodeValue.indexOf('\u200B') !== -1) k.nodeValue = k.nodeValue.replace(/\u200B/g, '');
+        if (k.nodeValue === '') el.removeChild(k);
+      } else if (k.nodeType === 1) {
+        tag = k.tagName.toUpperCase();
+        wiki = !!(k.className && String(k.className).indexOf('wiki-tag') !== -1);
+        mark = wiki ? null : (MD_WRAP_MARK[tag] || null);
+        if (!wiki && (/^(SPAN|FONT|U|SMALL|BIG)$/.test(tag) || (mark && active.indexOf(mark) !== -1))) {
+          nx = k.firstChild || nx;
+          while (k.firstChild) el.insertBefore(k.firstChild, k);
+          el.removeChild(k);
+        } else if (!wiki && !mdIsBlock(k)) {
+          mdNormalizeInline(k, mark ? active.concat([mark]) : active);
+          if (!k.firstChild && !/^(BR|INPUT|IMG)$/.test(tag)) el.removeChild(k);
         }
       }
+      k = nx;
+    }
+    k = el.firstChild;
+    while (k) {
+      nx = k.nextSibling;
+      if (nx && k.nodeType === 1 && nx.nodeType === 1 &&
+          ((MD_WRAP_MARK[k.tagName.toUpperCase()] && MD_WRAP_MARK[k.tagName.toUpperCase()] === MD_WRAP_MARK[nx.tagName.toUpperCase()]) ||
+           (k.tagName.toUpperCase() === 'CODE' && nx.tagName.toUpperCase() === 'CODE')) &&
+          !(nx.className && String(nx.className).indexOf('wiki-tag') !== -1)) {
+        while (nx.firstChild) k.appendChild(nx.firstChild);
+        el.removeChild(nx);
+        continue;
+      }
+      k = nx;
+    }
+    if (el.normalize) el.normalize();
+  }
+
+  function mdInlineLine(nodes) {
+    mdSawMarkup = false;
+    mdForceEsc = false;
+    mdActive = [];
+    var out = mdInlineSeq(nodes);
+    if (!mdSawMarkup) return out;
+    var want = mdVisibleText(nodes);
+    if (mdSameText(want, mdParsedText(out))) return out;
+    /* 다시 읽은 글자가 다르면: 정리한 복사본으로 다시 쓰고, 그래도 다르면 글자의 기호를 모두 \ 로 막음 */
+    var box = document.createElement('div'), i;
+    for (i = 0; i < nodes.length; i++) box.appendChild(nodes[i].cloneNode(true));
+    mdNormalizeInline(box, []);
+    out = mdInlineSeq(box.childNodes);
+    if (mdSameText(want, mdParsedText(out))) return out;
+    mdForceEsc = true;
+    out = mdInlineSeq(box.childNodes);
+    mdForceEsc = false;
+    return out;
+  }
+
+  /* 노드 하나를 마크다운 글자로 */
+  function mdInlineNode(n, prevOut) {
+    if (n.nodeType === 3) return mdTextEsc(n.nodeValue.replace(/\u200B/g, '').replace(/\u00A0/g, ' '));
+    if (n.nodeType !== 1) return '';
+    var tag = n.tagName.toUpperCase();
+    if (tag === 'BR') return '\n';
+    if (tag === 'INPUT' || tag === 'SCRIPT' || tag === 'STYLE') return '';
+    if (n.className && String(n.className).indexOf('wiki-tag') !== -1) {
+      var wk = n.getAttribute('data-wikilink') || n.textContent || '';
+      return '[[' + wk.replace(/^\[\[|\]\]$/g, '') + ']]';
+    }
+    var mk = MD_WRAP_MARK[tag];
+    if (mk) {
+      /* 같은 서식 안의 같은 서식, 문장부호로 시작 · 끝나는 서식은 다시 읽을 때 달라질 수 있어 확인 대상 */
+      if (mdActive.indexOf(mk) !== -1) mdSawMarkup = true;
+      mdActive.push(mk);
+      var inr = serializeInlineNodes(n);
+      mdActive.pop();
+      var core = inr.replace(/^\s+|\s+$/g, '');
+      if (core && (MD_PUNCT_RE.test(core.charAt(0)) || MD_PUNCT_RE.test(core.charAt(core.length - 1)))) mdSawMarkup = true;
+      return mdWrapInline(inr, mk);
+    }
+    if (tag === 'CODE') {
+      var ct = (n.textContent || '').replace(/\u200B/g, '').replace(/\u00A0/g, ' ').replace(/\n/g, ' ');
+      if (!ct) return '';
+      var f = '`';
+      while (ct.indexOf(f) !== -1) f += '`';
+      var pad = /^`|`$/.test(ct) || /^ [\s\S]*[^ ][\s\S]* $/.test(ct);
+      return f + (pad ? ' ' + ct + ' ' : ct) + f;
+    }
+    if (tag === 'A') {
+      var lt = serializeInlineNodes(n);
+      var href = (n.getAttribute('href') || '').replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29');
+      return href ? '[' + lt + '](' + href + ')' : lt;
+    }
+    if (mdIsBlock(n)) {
+      /* 줄 안에 끼어든 블록(붙여넣기 등): 줄을 바꿔 이어 씀 */
+      var inner = serializeInlineNodes(n);
+      if (!inner) return '';
+      return (prevOut && prevOut.charAt(prevOut.length - 1) !== '\n' ? '\n' : '') + inner + '\n';
+    }
+    return serializeInlineNodes(n);
+  }
+
+  var MD_WRAP_MARK = { STRONG: '**', B: '**', EM: '*', I: '*', DEL: '~~', S: '~~', STRIKE: '~~', MARK: '==' };
+
+  function mdIsZw(n) {
+    if (n.nodeType !== 3) return false;
+    var v = n.nodeValue;
+    return v === '' || (v.charCodeAt(0) === 0x200B && v.replace(/\u200B/g, '') === '');
+  }
+
+  /* 노드 여러 개를 이어서 (같은 서식끼리 붙어 있으면 *가**나* 대신 *가나* 로) */
+  function mdInlineSeq(nodes) {
+    var out = '', lastMark = null, i, n, piece, mark, tag;
+    for (i = 0; i < nodes.length; i++) {
+      n = nodes[i];
+      if (mdIsZw(n)) continue;
+      tag = n.nodeType === 1 ? n.tagName.toUpperCase() : '';
+      mark = (n.nodeType === 1 && !(n.className && String(n.className).indexOf('wiki-tag') !== -1)) ? (MD_WRAP_MARK[tag] || null) : null;
+      if (mark && lastMark === mark) {
+        var inner = serializeInlineNodes(n);
+        if (inner && !/^\s/.test(inner) && out.slice(-mark.length) === mark) {
+          var merged = mdWrapInline(inner, mark);
+          if (merged.slice(-mark.length) === mark && merged.indexOf(mark) === 0) {
+            out = out.slice(0, out.length - mark.length) + merged.slice(mark.length);
+            continue;
+          }
+        }
+      }
+      piece = mdInlineNode(n, out);
+      if (out && piece && /[*_~=`\\]$/.test(out) && /^[*_~=`]/.test(piece)) mdSawMarkup = true;   /* 기호끼리 맞닿음: 확인 필요 */
+      if (n.nodeType === 3 && piece) {
+        /* 서식 바로 뒤/앞에 붙은 * _ ~ = ` 글자는 서식 기호로 읽히지 않도록 \ 로 막음 */
+        if (lastMark && /^[*_~=`]/.test(piece) && piece.charAt(0) !== '\\') piece = '\\' + piece;
+        var j = i + 1;
+        while (j < nodes.length && mdIsZw(nodes[j])) j++;
+        var nx = j < nodes.length ? nodes[j] : null;
+        if (nx && nx.nodeType === 1 && MD_WRAP_MARK[nx.tagName.toUpperCase()] && /[*_~=`]$/.test(piece) && !/\\[*_~=`]$/.test(piece)) {
+          piece = piece.slice(0, -1) + '\\' + piece.slice(-1);
+        }
+      }
+      out += piece;
+      lastMark = (mark && piece && /\S/.test(piece) && piece.slice(-mark.length) === mark) ? mark : null;
     }
     return out;
   }
 
-  function serializeDOMToMarkdown(root) {
-    var mdLines = [];
-    var children = root.childNodes;
+  function serializeInlineNodes(parent) {
+    return mdInlineSeq(parent.childNodes);
+  }
 
-    for (var i = 0; i < children.length; i++) {
-      var node = children[i];
+
+  function mdTaskBox(li) {
+    for (var k = li.firstChild; k; k = k.nextSibling) {
+      if (k.nodeType === 1 && k.tagName.toUpperCase() === 'INPUT' && k.type === 'checkbox') return k;
+    }
+    return null;
+  }
+
+  /* 바로 앞 형제(공백 글자 제외)가 같은 종류의 목록인지 */
+  function mdPrevSameList(list) {
+    var k = list.previousSibling;
+    while (k && k.nodeType === 3 && !/[^\s\u200B]/.test(k.nodeValue)) k = k.previousSibling;
+    return !!(k && k.nodeType === 1 && k.tagName.toUpperCase() === list.tagName.toUpperCase());
+  }
+
+  function mdSerializeList(list, out, indent, alt) {
+    var isOl = list.tagName.toUpperCase() === 'OL';
+    if (alt === undefined) {
+      alt = false;
+      var pk = list;
+      while (mdPrevSameList(pk)) { alt = !alt; pk = pk.previousSibling; while (pk && pk.nodeType !== 1) pk = pk.previousSibling; }
+    }
+    var n = isOl ? (parseInt(list.getAttribute('start'), 10) || 1) : 1;
+    var lastMarkerLen = 2, k, c;
+    for (k = list.firstChild; k; k = k.nextSibling) {
+      if (k.nodeType === 3) {
+        if (/[^\s\u200B]/.test(k.nodeValue)) out.push(indent + '- ' + mdEscapeText(k.nodeValue.replace(/\u200B/g, '').replace(/^\s+|\s+$/g, '')));
+        continue;
+      }
+      if (k.nodeType !== 1) continue;
+      var tag = k.tagName.toUpperCase();
+      if (tag === 'UL' || tag === 'OL') {          /* <ul><li>..</li><ul>..</ul></ul> 처럼 목록이 바로 목록 안에 든 경우 */
+        mdSerializeList(k, out, indent + mdSpaces(lastMarkerLen), undefined);
+        continue;
+      }
+      if (tag !== 'LI') {
+        var stray = serializeInlineNodes(k).replace(/\n+/g, ' ').replace(/^\s+|\s+$/g, '');
+        if (stray) out.push(indent + '- ' + stray);
+        continue;
+      }
+      var marker = isOl ? (n + (alt ? ') ' : '. ')) : (alt ? '+ ' : '- ');
+      n++;
+      lastMarkerLen = marker.length;
+      var cb = mdTaskBox(k);
+      var task = cb || (k.className && String(k.className).indexOf('task-item') !== -1);
+      var text = '', subs = [], own = [];
+      for (c = k.firstChild; c; c = c.nextSibling) {
+        if (c.nodeType === 1 && /^(UL|OL)$/i.test(c.tagName)) { subs.push(c); continue; }
+        if (c.nodeType === 1 && c.tagName.toUpperCase() === 'INPUT') continue;
+        own.push(c);
+      }
+      text = mdInlineLine(own);
+      text = text.replace(/\s*\n+\s*/g, ' ').replace(/^\s+|\s+$/g, '');
+      /* 항목 글자가 할 일 표시나 구분선으로 읽히지 않도록 */
+      if (/^\[[ xX]\]([ \t]|$)/.test(text) || MD_HR_RE.test(marker + text)) text = '\\' + text;
+      if (task) text = '[' + ((cb && cb.checked) ? 'x' : ' ') + '] ' + text;
+      out.push((indent + marker + text).replace(/\s+$/, function (sp) { return text ? '' : ' '; }));
+      for (c = 0; c < subs.length; c++) mdSerializeList(subs[c], out, indent + mdSpaces(marker.length));
+    }
+  }
+
+  function mdSerializeTable(table, out) {
+    var rows = table.getElementsByTagName('tr'), matrix = [], aligns = [], cols = 0, r, c, cells, cell, row;
+    for (r = 0; r < rows.length; r++) {
+      cells = [];
+      for (c = rows[r].firstChild; c; c = c.nextSibling) {
+        if (c.nodeType !== 1 || !/^(TD|TH)$/i.test(c.tagName)) continue;
+        cell = mdInlineLine(c.childNodes).replace(/\s*\n+\s*/g, ' ').replace(/^\s+|\s+$/g, '').replace(/\|/g, '\\|');
+        cells.push(cell);
+        if (r === 0) {
+          var al = (c.style && c.style.textAlign) || c.getAttribute('align') || '';
+          aligns.push(al);
+        }
+      }
+      if (cells.length > cols) cols = cells.length;
+      matrix.push(cells);
+    }
+    if (!matrix.length || !cols) return;
+    function line(cs) {
+      var parts = [];
+      for (var x = 0; x < cols; x++) parts.push(cs[x] || '');
+      return '| ' + parts.join(' | ') + ' |';
+    }
+    out.push(line(matrix[0]));
+    var sep = [];
+    for (c = 0; c < cols; c++) {
+      var a = aligns[c] || '';
+      sep.push(a === 'center' ? ':---:' : a === 'right' ? '---:' : a === 'left' ? ':---' : '---');
+    }
+    out.push('| ' + sep.join(' | ') + ' |');
+    for (r = 1; r < matrix.length; r++) out.push(line(matrix[r]));
+  }
+
+  /* 코드 블록의 글자: 글자 노드는 그대로(정확), <br> · <div> 가 섞였으면 줄바꿈으로 바꿔 읽음 */
+  function mdCodeText(pre) {
+    var text = '';
+    (function walk(n) {
+      for (var k = n.firstChild; k; k = k.nextSibling) {
+        if (k.nodeType === 3) text += k.nodeValue;
+        else if (k.nodeType === 1) {
+          var t = k.tagName.toUpperCase();
+          if (t === 'BR') { text += '\n'; continue; }
+          if ((t === 'DIV' || t === 'P') && text !== '' && !/\n$/.test(text)) text += '\n';
+          walk(k);
+        }
+      }
+    })(pre);
+    return text.replace(/\u200B/g, '').replace(/\u00A0/g, ' ').replace(/\r\n?/g, '\n');
+  }
+
+  /* 블록들을 차례로 마크다운 줄로 (container 의 자식들) */
+  function mdSerializeBlocks(container, out) {
+    var run = [];
+    function flush() {
+      if (!run.length) return;
+      var text = mdInlineLine(run), x;
+      run = [];
+      text = text.replace(/\n+$/, '');
+      if (/^[\s\u00A0]*$/.test(text)) return;
+      var ls = text.split('\n');
+      for (x = 0; x < ls.length; x++) out.push(mdEscapeLineStart(ls[x]));
+    }
+    for (var node = container.firstChild; node; node = node.nextSibling) {
       if (node.nodeType === 3) {
-        var rawTxt = node.nodeValue.replace(/\u00A0/g, ' ').trim();
-        if (rawTxt) mdLines.push(rawTxt);
+        if (!run.length && !/[^\s\u200B]/.test(node.nodeValue)) continue;
+        run.push(node);
         continue;
       }
       if (node.nodeType !== 1) continue;
-
+      if (!mdIsBlock(node)) {
+        run.push(node);
+        continue;
+      }
+      flush();
       var tag = node.tagName.toUpperCase();
       if (/^H[1-6]$/.test(tag)) {
         var level = parseInt(tag.charAt(1), 10);
-        var hashes = new Array(level + 1).join('#');
-        mdLines.push(hashes + ' ' + serializeInlineNodes(node).trim());
+        var ht = mdInlineLine(node.childNodes).replace(/\s*\n+\s*/g, ' ').replace(/^\s+|\s+$/g, '');
+        /* 제목 끝의 ' ##' 는 닫는 표시로 읽혀 사라지므로 막아 둠 */
+        if (/^#+$/.test(ht)) ht = '\\' + ht;
+        else ht = ht.replace(/([ \t])(#+)$/, '$1\\$2');
+        out.push(new Array(level + 1).join('#') + ' ' + ht);
       } else if (tag === 'HR') {
-        mdLines.push('---');
+        out.push('---');
       } else if (tag === 'PRE') {
-        var codeText = (node.innerText || node.textContent || '').replace(/\u00A0/g, ' ').replace(/\n$/, '');
-        mdLines.push('```\n' + codeText + '\n```');
+        var codeText = mdCodeText(node).replace(/\n$/, '');
+        var fence = '```';
+        while (codeText.indexOf(fence) !== -1) fence += '`';
+        out.push(fence + (node.getAttribute('data-lang') || ''));
+        if (codeText !== '') {
+          var cl = codeText.split('\n');
+          for (var q = 0; q < cl.length; q++) out.push(cl[q]);
+        }
+        out.push(fence);
       } else if (tag === 'BLOCKQUOTE') {
-        var bqKids = node.childNodes;
-        var hasBlock = false;
-        for (var b = 0; b < bqKids.length; b++) {
-          if (bqKids[b].nodeType === 1) {
-            hasBlock = true;
-            mdLines.push('> ' + serializeInlineNodes(bqKids[b]));
-          }
-        }
-        if (!hasBlock) {
-          mdLines.push('> ' + serializeInlineNodes(node));
-        }
+        var inner = [];
+        mdSerializeBlocks(node, inner);
+        if (!inner.length) inner.push('');
+        for (var b = 0; b < inner.length; b++) out.push(inner[b] === '' ? '>' : '> ' + inner[b]);
       } else if (tag === 'UL' || tag === 'OL') {
-        var items = node.childNodes;
-        var olIdx = 1;
-        for (var k = 0; k < items.length; k++) {
-          var li = items[k];
-          if (li.nodeType !== 1 || li.tagName.toUpperCase() !== 'LI') continue;
-          var cb = li.querySelector ? li.querySelector('input[type="checkbox"]') : null;
-          if (cb) {
-            var isChecked = cb.checked;
-            mdLines.push('- [' + (isChecked ? 'x' : ' ') + '] ' + serializeInlineNodes(li).trim());
-          } else if (tag === 'OL') {
-            mdLines.push(olIdx + '. ' + serializeInlineNodes(li).trim());
-            olIdx++;
+        mdSerializeList(node, out, '');
+      } else if (tag === 'LI') {
+        var tmp = document.createElement('ul');
+        tmp.appendChild(node.cloneNode(true));
+        mdSerializeList(tmp, out, '');
+      } else if (tag === 'TABLE') {
+        mdSerializeTable(node, out);
+      } else if (tag === 'THEAD' || tag === 'TBODY' || tag === 'TFOOT' || tag === 'TR' || tag === 'TD' || tag === 'TH') {
+        mdSerializeBlocks(node, out);
+      } else {
+        /* P · DIV: 안에 블록이 또 있으면(붙여넣기 · 브라우저가 만든 div 겹침) 안쪽을 차례로 */
+        var hasBlock = false;
+        for (var c = node.firstChild; c; c = c.nextSibling) {
+          if (mdIsBlock(c)) { hasBlock = true; break; }
+        }
+        if (hasBlock) {
+          mdSerializeBlocks(node, out);
+        } else {
+          var t = mdInlineLine(node.childNodes).replace(/\n+$/, '');
+          if (/^[\s\u00A0]*$/.test(t)) {
+            out.push('');
           } else {
-            mdLines.push('- ' + serializeInlineNodes(li).trim());
+            var pl = t.split('\n');
+            for (var z = 0; z < pl.length; z++) out.push(mdEscapeLineStart(pl[z]));
           }
         }
-      } else {
-        var lineStr = serializeInlineNodes(node);
-        mdLines.push(lineStr);
       }
     }
+    flush();
+  }
 
-    var joined = mdLines.join('\n').replace(/\n{3,}/g, '\n\n');
-    if (joined.trim() === '') return '';
+  function serializeDOMToMarkdown(root) {
+    var mdLines = [];
+    mdSerializeBlocks(root, mdLines);
+    var joined = mdLines.join('\n');
+    if (!/\S/.test(joined)) return '';
     return joined;
   }
 
@@ -1940,7 +2502,7 @@ html_content = r'''<!DOCTYPE html>
     while (node && node !== elLiveEditor) {
       if (node.nodeType === 1) {
         var t = node.tagName.toUpperCase();
-        if (t === 'P' || t === 'DIV' || /^H[1-6]$/.test(t) || t === 'LI' || t === 'PRE' || t === 'BLOCKQUOTE') {
+        if (t === 'P' || t === 'DIV' || /^H[1-6]$/.test(t) || t === 'LI' || t === 'PRE' || t === 'BLOCKQUOTE' || t === 'TD' || t === 'TH') {
           return node;
         }
       }
@@ -1957,150 +2519,918 @@ html_content = r'''<!DOCTYPE html>
     syncEditorToDisk();
   }
 
-  function checkBlockMarkdownShortcutOnSpace() {
-    var block = getActiveBlockElement();
+  /* ==========================================================================
+     v2.9 마크다운 입력 도우미 (편집기 안에서 바로 서식으로 바뀌는 기능)
+     - 줄 첫머리 + 스페이스바: # 제목, - * + 글머리 목록, 1. 번호 목록, [ ] 할 일, > 인용
+     - Enter: 목록 이어 쓰기 / 빈 항목에서 목록 끝내기, ``` 코드 블록(나갈 때는 마지막 줄에 ``` + Enter, Command+Enter, ↓), --- 구분선,
+       | 칸 | 칸 | 표, 빈 인용 줄에서 인용 끝내기
+     - Tab / Shift+Tab: 목록 들여쓰기 · 내어쓰기, 표에서 다음 · 이전 칸
+     - Backspace(줄 맨 앞): 목록 · 제목 · 인용을 일반 문단으로 (방금 자동으로 바뀐 줄은 입력한 기호까지 되돌림)
+     - 닫는 기호를 치는 순간: **굵게** *기울임* _기울임_ ~~취소선~~ ==형광펜== `코드` [글](주소) [[위키 링크]]
+     ========================================================================== */
+  var mdLastAuto = null;   /* 방금 자동 변환한 줄: { el, text } (바로 Backspace 하면 입력한 기호로 되돌림) */
+  var mdSpaceTyped = false;
+
+  function mdSel() {
+    var sel = window.getSelection ? window.getSelection() : null;
+    if (!sel || !sel.rangeCount || !sel.anchorNode) return null;
+    if (!elLiveEditor.contains(sel.anchorNode)) return null;
+    return sel;
+  }
+
+  function mdSetCaret(node, offset) {
+    var sel = window.getSelection();
+    var r = document.createRange();
+    r.setStart(node, offset);
+    r.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+
+  /* 요소 안 첫 글자 자리에 커서 (빈 요소면 <br> 앞) */
+  function mdCaretAtStart(el) {
+    var n = el;
+    while (n.firstChild && n.firstChild.nodeType === 1 && !/^(BR|INPUT|UL|OL)$/i.test(n.firstChild.tagName) &&
+           n.firstChild.getAttribute('contenteditable') !== 'false') {
+      n = n.firstChild;
+    }
+    if (n.firstChild && n.firstChild.nodeType === 3) mdSetCaret(n.firstChild, 0);
+    else mdSetCaret(n, 0);
+  }
+
+  function mdCaretAtEnd(el) {
+    var r = document.createRange();
+    r.selectNodeContents(el);
+    r.collapse(false);
+    var sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(r);
+  }
+
+  /* 커서가 든 '줄 블록': 표 칸 · 코드 블록 · 목록 항목 · 문단/제목 */
+  function mdLineBlock(node) {
+    var sel = node ? null : mdSel();
+    var n = node || (sel ? sel.anchorNode : null);
+    while (n && n !== elLiveEditor) {
+      if (n.nodeType === 1 && /^(P|DIV|H[1-6]|LI|PRE|TD|TH)$/i.test(n.tagName)) {
+        /* 코드 블록 안이면 코드 블록 전체를 한 블록으로 */
+        var up = n.parentNode;
+        while (up && up !== elLiveEditor) {
+          if (up.nodeType === 1 && up.tagName.toUpperCase() === 'PRE') return up;
+          up = up.parentNode;
+        }
+        return n;
+      }
+      n = n.parentNode;
+    }
+    return null;
+  }
+
+  function mdIsList(n) { return !!(n && n.nodeType === 1 && /^(UL|OL)$/i.test(n.tagName)); }
+  function mdIsTag(n, re) { return !!(n && n.nodeType === 1 && re.test(n.tagName)); }
+
+  /* 블록 '자기' 글자 (안에 든 하위 목록은 빼고) */
+  function mdOwnText(el) {
+    var t = '';
+    for (var k = el.firstChild; k; k = k.nextSibling) {
+      if (mdIsList(k)) continue;
+      if (k.nodeType === 3) t += k.nodeValue;
+      else if (k.nodeType === 1 && k.tagName.toUpperCase() !== 'INPUT') t += k.textContent || '';
+    }
+    return t.replace(/\u200B/g, '').replace(/\u00A0/g, ' ');
+  }
+
+  function mdTextBefore(block) {
+    var sel = mdSel();
+    if (!sel) return '';
+    var r = document.createRange();
+    r.selectNodeContents(block);
+    try { r.setEnd(sel.anchorNode, sel.anchorOffset); } catch (e) { return ''; }
+    return r.toString().replace(/\u200B/g, '').replace(/\u00A0/g, ' ');
+  }
+
+  /* 블록에서 하위 목록을 뺀 내용이 비었는지 */
+  function mdFillEmpty(el) {
+    var has = false;
+    for (var k = el.firstChild; k; k = k.nextSibling) {
+      if (mdIsList(k)) continue;
+      if (k.nodeType === 3 && k.nodeValue.replace(/\u200B/g, '') !== '') { has = true; break; }
+      if (k.nodeType === 1 && !mdIsTag(k, /^INPUT$/i)) {
+        if (mdIsTag(k, /^BR$/i) || (k.textContent || '') !== '' || k.getElementsByTagName('br').length) { has = true; break; }
+      }
+    }
+    if (!has) {
+      var first = el.firstChild;
+      while (first && (mdIsTag(first, /^INPUT$/i))) first = first.nextSibling;
+      el.insertBefore(document.createElement('br'), first || null);
+    }
+  }
+
+  /* 글자 없는 빈 서식 요소(<strong></strong> 등) 지우기: 목록을 나눌 때 남는 껍데기 */
+  function mdPruneEmpty(el) {
+    var k = el.firstChild, nx;
+    while (k) {
+      nx = k.nextSibling;
+      if (k.nodeType === 1 && !mdIsBlock(k) && !/^(BR|INPUT|IMG)$/i.test(k.tagName) &&
+          !(k.className && String(k.className).indexOf('wiki-tag') !== -1)) {
+        mdPruneEmpty(k);
+        if (!k.firstChild) el.removeChild(k);
+      } else if (k.nodeType === 3 && k.nodeValue.replace(/\u200B/g, '') === '') {
+        el.removeChild(k);       /* 빈 글자 · 폭 0 글자만 남은 조각 */
+      }
+      k = nx;
+    }
+  }
+
+  /* 노드 뒤에 끼워 넣기 */
+  function mdInsertAfter(newNode, ref) {
+    ref.parentNode.insertBefore(newNode, ref.nextSibling);
+  }
+
+  function mdMoveChildren(from, to, stopAt) {
+    while (from.firstChild && from.firstChild !== stopAt) to.appendChild(from.firstChild);
+  }
+
+  function mdListIndex(li) {
+    var n = 0;
+    for (var k = li.parentNode.firstChild; k && k !== li; k = k.nextSibling) if (mdIsTag(k, /^LI$/i)) n++;
+    return n;
+  }
+
+  /* 목록을 li 바로 뒤에서 둘로 나눔: li 다음 항목들은 새 목록으로 (번호 목록은 번호가 이어지도록 start 지정) */
+  function mdSplitListAfter(li) {
+    var list = li.parentNode;
+    if (!li.nextSibling) return null;
+    var tail = document.createElement(list.tagName.toLowerCase());
+    if (list.tagName.toUpperCase() === 'OL') {
+      var st = (parseInt(list.getAttribute('start'), 10) || 1) + mdListIndex(li) + 1;
+      if (st !== 1) tail.setAttribute('start', String(st));
+    }
+    while (li.nextSibling) tail.appendChild(li.nextSibling);
+    mdInsertAfter(tail, list);
+    return tail;
+  }
+
+  function mdRemoveIfEmptyList(list) {
+    if (!list || !list.parentNode) return;
+    for (var k = list.firstChild; k; k = k.nextSibling) if (k.nodeType === 1) return;
+    list.parentNode.removeChild(list);
+  }
+
+  function mdMakeTaskParts(li, checked) {
+    li.className = 'task-item' + (checked ? ' task-done' : '');
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.setAttribute('contenteditable', 'false');
+    cb.checked = !!checked;
+    if (checked) cb.setAttribute('checked', 'checked');
+    var sp = document.createElement('span');
+    li.appendChild(cb);
+    li.appendChild(sp);
+    return sp;
+  }
+
+  /* 할 일 항목의 글자가 든 span (없으면 만들어 줌) */
+  function mdTaskSpan(li) {
+    for (var k = li.firstChild; k; k = k.nextSibling) {
+      if (mdIsTag(k, /^SPAN$/i) && !(k.className && String(k.className).indexOf('wiki-tag') !== -1)) return k;
+    }
+    return null;
+  }
+
+  function mdIsTask(li) {
+    return !!(li && li.className && String(li.className).indexOf('task-item') !== -1);
+  }
+
+  /* li → 문단 (목록 밖으로). 하위 목록은 문단 뒤로 */
+  function mdLiToParagraph(li, keepText) {
+    var list = li.parentNode;
+    var p = document.createElement('p');
+    if (keepText) p.appendChild(document.createTextNode(keepText));
+    var subs = [], k, next;
+    for (k = li.firstChild; k; k = next) {
+      next = k.nextSibling;
+      if (mdIsList(k)) { subs.push(k); continue; }
+      if (mdIsTag(k, /^INPUT$/i)) continue;
+      if (mdIsTask(li) && mdIsTag(k, /^SPAN$/i) && !(k.className && String(k.className).indexOf('wiki-tag') !== -1)) {
+        mdMoveChildren(k, p);
+        continue;
+      }
+      p.appendChild(k);
+    }
+    mdFillEmpty(p);
+    mdSplitListAfter(li);
+    mdInsertAfter(p, list);
+    var ref = p;
+    for (k = 0; k < subs.length; k++) { mdInsertAfter(subs[k], ref); ref = subs[k]; }
+    list.removeChild(li);
+    mdRemoveIfEmptyList(list);
+    return p;
+  }
+
+  function mdKeepCaret(fn) {
+    var sel = mdSel();
+    var node = sel ? sel.anchorNode : null, off = sel ? sel.anchorOffset : 0;
+    fn();
+    if (node && elLiveEditor.contains(node)) {
+      try { mdSetCaret(node, Math.min(off, node.nodeType === 3 ? node.nodeValue.length : node.childNodes.length)); } catch (e) {}
+    }
+  }
+
+  /* 들여쓰기: 바로 위 항목의 하위 목록으로 */
+  function mdIndentLi(li) {
+    var prev = li.previousSibling;
+    while (prev && !mdIsTag(prev, /^LI$/i)) prev = prev.previousSibling;
+    if (!prev) return false;
+    mdKeepCaret(function () {
+      var sub = null;
+      for (var k = prev.lastChild; k; k = k.previousSibling) {
+        if (k.nodeType === 3 && !/[^\s\u200B]/.test(k.nodeValue)) continue;
+        if (mdIsList(k)) sub = k;
+        break;
+      }
+      if (!sub) {
+        sub = document.createElement(li.parentNode.tagName.toLowerCase());
+        prev.appendChild(sub);
+      }
+      sub.appendChild(li);
+      /* 들여 쓴 항목의 하위 목록이 있으면 함께 따라옴 (li 안에 있으므로 그대로) */
+    });
+    return true;
+  }
+
+  /* 내어쓰기: 윗 단계 항목 바로 뒤로. 뒤따르던 같은 단계 항목들은 이 항목의 하위 목록이 됨 */
+  function mdOutdentLi(li) {
+    var list = li.parentNode, parentLi = list.parentNode;
+    if (!mdIsTag(parentLi, /^LI$/i)) return false;
+    mdKeepCaret(function () {
+      if (li.nextSibling) {
+        var rest = document.createElement(list.tagName.toLowerCase());
+        while (li.nextSibling) rest.appendChild(li.nextSibling);
+        li.appendChild(rest);
+      }
+      mdInsertAfter(li, parentLi);
+      mdRemoveIfEmptyList(list);
+    });
+    return true;
+  }
+
+  /* Enter 로 목록 항목 나누기: 커서 뒤의 글자(와 하위 목록)는 새 항목으로 */
+  function mdSplitLi(li) {
+    var sel = mdSel();
+    var task = mdIsTask(li);
+    var holder = task ? (mdTaskSpan(li) || li) : li;
+    var r = document.createRange();
+    r.setStart(sel.anchorNode, sel.anchorOffset);
+    r.setEnd(holder, holder.childNodes.length);
+    var frag = r.extractContents();
+    var nli = document.createElement('li');
+    var target = task ? mdMakeTaskParts(nli, false) : nli;
+    target.appendChild(frag);
+    if (task) {
+      /* 할 일: span 뒤에 붙어 있던 하위 목록도 새 항목으로 */
+      var k = holder.nextSibling, nx;
+      while (k) { nx = k.nextSibling; if (mdIsList(k)) nli.appendChild(k); k = nx; }
+    }
+    /* 옮겨 간 내용 앞쪽에 하위 목록이 끼어 있으면 글자 뒤로 */
+    var lists = [], c;
+    for (c = target.firstChild; c; c = c.nextSibling) if (mdIsList(c)) lists.push(c);
+    if (!task) for (c = 0; c < lists.length; c++) nli.appendChild(lists[c]);
+    mdPruneEmpty(holder);
+    mdPruneEmpty(target);
+    mdFillEmpty(holder);
+    if (task) mdFillEmpty(target); else mdFillEmpty(nli);
+    mdInsertAfter(nli, li);
+    mdCaretAtStart(target);
+    return nli;
+  }
+
+  /* 리스트 · 문단 블록 바꾸기 공통: block 을 newEl 로 바꾸되 내용은 그대로 */
+  function mdReplaceBlock(block, newEl) {
+    mdMoveChildren(block, newEl);
+    block.parentNode.replaceChild(newEl, block);
+    mdFillEmpty(newEl);
+    return newEl;
+  }
+
+  /* 인용 · 목록 밖으로: child 를 container 뒤로 빼내고, 뒤따르던 형제들은 같은 종류의 새 container 로 */
+  function mdLiftOut(child, container) {
+    if (child.nextSibling) {
+      var tail = container.cloneNode(false);
+      while (child.nextSibling) tail.appendChild(child.nextSibling);
+      mdInsertAfter(tail, container);
+    }
+    mdInsertAfter(child, container);
+    var left = false;
+    for (var k = container.firstChild; k; k = k.nextSibling) {
+      if (k.nodeType === 1 || (k.nodeType === 3 && /[^\s\u200B]/.test(k.nodeValue))) { left = true; break; }
+    }
+    if (!left) container.parentNode.removeChild(container);
+  }
+
+  /* ---------------- 줄 첫머리 + 스페이스바 ---------------- */
+  function mdBlockShortcut() {
+    var sel = mdSel();
+    if (!sel || !sel.isCollapsed) return false;
+    var block = mdLineBlock();
     if (!block) return false;
-    var rawText = (block.innerText || block.textContent || '').replace(/\u00A0/g, ' ');
-
-    var hMatch = rawText.match(/^(#{1,6})\s(.*)$/);
-    if (hMatch) {
-      var level = hMatch[1].length;
-      var rest = escapeHtml(hMatch[2]) || '<br>';
-      replaceBlockWithTag(block, 'h' + level, rest);
-      return true;
+    var tag = block.tagName.toUpperCase();
+    if (tag === 'PRE' || tag === 'TD' || tag === 'TH') return false;
+    var before = mdTextBefore(block);
+    if (!/ $/.test(before) || before.length > 12) return false;
+    var m, kind = null, level = 0, start = 1, checked = false;
+    if ((m = before.match(/^(#{1,6}) $/))) { kind = 'h'; level = m[1].length; }
+    else if (/^> $/.test(before)) kind = 'quote';
+    else if ((m = before.match(/^(?:[-*+] )?\[( |x|X)?\] $/))) { kind = 'task'; checked = !!m[1] && m[1] !== ' '; }
+    else if (/^[-*+] $/.test(before)) kind = 'ul';
+    else if ((m = before.match(/^(\d{1,3})[.)] $/))) { kind = 'ol'; start = parseInt(m[1], 10); }
+    if (!kind) return false;
+    if (tag === 'LI') {
+      /* 목록 항목 안에서는 [ ] 로 할 일 바꾸기만 */
+      if (kind !== 'task' || mdIsTask(block)) return false;
+    } else if (/^H[1-6]$/.test(tag) && kind !== 'h') {
+      return false;
     }
 
-    var bqMatch = rawText.match(/^>\s(.*)$/);
-    if (bqMatch) {
-      var bq = document.createElement('blockquote');
-      var p = document.createElement('p');
-      p.innerHTML = escapeHtml(bqMatch[1]) || '<br>';
-      bq.appendChild(p);
-      block.parentNode.replaceChild(bq, block);
-      placeCaretAtStart(p);
-      syncEditorToDisk();
-      return true;
-    }
+    /* 입력한 기호 지우기 */
+    var r = document.createRange();
+    r.selectNodeContents(block);
+    r.setEnd(sel.anchorNode, sel.anchorOffset);
+    r.deleteContents();
+    var focusEl, made;
 
-    var taskMatch = rawText.match(/^(?:[-*]\s+)?\[([ xX]?)\]\s(.*)$/);
-    if (taskMatch) {
-      var checked = taskMatch[1].toLowerCase() === 'x';
-      var ul = document.createElement('ul');
-      var li = document.createElement('li');
-      li.className = 'task-item' + (checked ? ' task-done' : '');
+    if (tag === 'LI') {
+      var sp = document.createElement('span');
+      mdMoveChildrenExceptLists(block, sp);
       var cb = document.createElement('input');
       cb.type = 'checkbox';
       cb.setAttribute('contenteditable', 'false');
       cb.checked = checked;
-      var sp = document.createElement('span');
-      sp.innerHTML = escapeHtml(taskMatch[2]) || '<br>';
-      li.appendChild(cb);
-      li.appendChild(sp);
-      ul.appendChild(li);
-      block.parentNode.replaceChild(ul, block);
-      placeCaretAtStart(sp);
-      syncEditorToDisk();
+      block.className = 'task-item' + (checked ? ' task-done' : '');
+      block.insertBefore(sp, block.firstChild);
+      block.insertBefore(cb, sp);
+      mdFillEmpty(sp);
+      focusEl = sp;
+      made = block;
+    } else if (kind === 'h') {
+      made = focusEl = mdReplaceBlock(block, document.createElement('h' + level));
+    } else if (kind === 'quote') {
+      var bq = document.createElement('blockquote');
+      var p = document.createElement('p');
+      mdMoveChildren(block, p);
+      mdFillEmpty(p);
+      bq.appendChild(p);
+      block.parentNode.replaceChild(bq, block);
+      made = bq;
+      focusEl = p;
+    } else {
+      var ltag = kind === 'ol' ? 'ol' : 'ul';
+      var li = document.createElement('li');
+      var holder = li;
+      if (kind === 'task') holder = mdMakeTaskParts(li, checked);
+      mdMoveChildren(block, holder);
+      mdFillEmpty(holder);
+      /* 바로 위 · 아래가 같은 종류의 목록이면 이어 붙임 */
+      var prev = block.previousSibling, next = block.nextSibling;
+      while (prev && prev.nodeType === 3 && !/[^\s\u200B]/.test(prev.nodeValue)) prev = prev.previousSibling;
+      while (next && next.nodeType === 3 && !/[^\s\u200B]/.test(next.nodeValue)) next = next.nextSibling;
+      var list;
+      if (mdIsTag(prev, new RegExp('^' + ltag + '$', 'i'))) {
+        list = prev;
+        list.appendChild(li);
+        block.parentNode.removeChild(block);
+      } else {
+        list = document.createElement(ltag);
+        if (ltag === 'ol' && start !== 1) list.setAttribute('start', String(start));
+        list.appendChild(li);
+        block.parentNode.replaceChild(list, block);
+      }
+      if (mdIsTag(next, new RegExp('^' + ltag + '$', 'i')) && next !== list) {
+        while (next.firstChild) list.appendChild(next.firstChild);
+        next.parentNode.removeChild(next);
+      }
+      made = li;
+      focusEl = holder;
+    }
+    mdCaretAtStart(focusEl);
+    mdLastAuto = { el: made, text: before, focus: focusEl, content: mdOwnText(focusEl) };
+    return true;
+  }
+
+  function mdMoveChildrenExceptLists(from, to) {
+    var k = from.firstChild, nx;
+    while (k) {
+      nx = k.nextSibling;
+      if (!mdIsList(k) && !mdIsTag(k, /^INPUT$/i)) to.appendChild(k);
+      k = nx;
+    }
+  }
+
+  /* 방금 자동 변환한 줄에서 바로 Backspace: 입력한 기호까지 글자로 되돌림 */
+  function mdUndoAutoFormat(block) {
+    var a = mdLastAuto;
+    mdLastAuto = null;
+    if (!a || !a.el.parentNode || !elLiveEditor.contains(a.el)) return false;
+    if (!(block === a.focus || block === a.el || a.el.contains(block))) return false;
+    if (mdOwnText(a.focus) !== a.content) return false;    /* 그 뒤에 글자를 쳤으면 '바로 되돌리기'가 아님 */
+    var p = document.createElement('p');
+    var tn = document.createTextNode(a.text.replace(/ $/, '\u00A0'));
+    p.appendChild(tn);
+    var src = a.focus;
+    mdMoveChildrenExceptLists(src, p);
+    var el = a.el;
+    if (mdIsTag(el, /^LI$/i)) {
+      var list = el.parentNode;
+      var subs = [], k;
+      for (k = el.firstChild; k; k = k.nextSibling) if (mdIsList(k)) subs.push(k);
+      mdSplitListAfter(el);
+      mdInsertAfter(p, list);
+      var ref = p;
+      for (k = 0; k < subs.length; k++) { mdInsertAfter(subs[k], ref); ref = subs[k]; }
+      list.removeChild(el);
+      mdRemoveIfEmptyList(list);
+    } else {
+      el.parentNode.replaceChild(p, el);
+    }
+    if (p.lastChild && mdIsTag(p.lastChild, /^BR$/i) && p.lastChild !== p.firstChild) p.removeChild(p.lastChild);
+    mdFillEmpty(p);
+    mdSetCaret(tn, tn.nodeValue.length);
+    return true;
+  }
+
+  /* ---------------- Enter ---------------- */
+  function mdMakeCodeBlock(block, lang) {
+    var pre = document.createElement('pre');
+    if (lang) pre.setAttribute('data-lang', lang);
+    var code = document.createElement('code');
+    code.appendChild(document.createTextNode('\n'));
+    pre.appendChild(code);   /* 빈 코드 블록 = 끝의 줄바꿈 하나 */
+    block.parentNode.replaceChild(pre, block);
+    if (!pre.nextSibling || !mdIsBlock(mdNextElement(pre))) {
+      var after = document.createElement('p');
+      after.innerHTML = '<br>';
+      mdInsertAfter(after, pre);
+    }
+    mdSetCaret(code.firstChild, 0);
+    return pre;
+  }
+
+  function mdNextElement(n) {
+    var k = n.nextSibling;
+    while (k && k.nodeType !== 1) k = k.nextSibling;
+    return k;
+  }
+
+  function mdPrevElement(n) {
+    var k = n.previousSibling;
+    while (k && k.nodeType !== 1) k = k.previousSibling;
+    return k;
+  }
+
+  /* 코드 블록 다음 줄로 나가기 (없으면 빈 문단을 만듦) */
+  function mdLeavePre(pre) {
+    var next = mdNextElement(pre);
+    if (!next || !mdIsTag(next, /^(P|DIV|H[1-6])$/i)) {
+      var p = document.createElement('p');
+      p.innerHTML = '<br>';
+      mdInsertAfter(p, pre);
+      next = p;
+    }
+    mdCaretAtStart(next);
+  }
+
+  /* 코드 블록의 글자는 언제나 '하나의 글자 노드 + 끝의 줄바꿈 하나'로 다룸
+     (엔진마다 Enter 를 <br> 이나 <div> 로 넣는 차이를 피하려고 줄바꿈을 직접 넣음) */
+  function mdPreCode(pre) {
+    return pre.getElementsByTagName('code')[0] || pre;
+  }
+
+  /* 코드 블록 안의 <br> · <div> 를 줄바꿈 글자로 바꾸고, 커서 위치(글자 번호)를 돌려줌 */
+  function mdPreFlatten(pre) {
+    var code = mdPreCode(pre);
+    var sel = mdSel();
+    var marker = document.createTextNode('\uE000');
+    if (sel) {
+      var r = sel.getRangeAt(0).cloneRange();
+      r.collapse(true);
+      r.insertNode(marker);
+    }
+    var text = '';
+    (function walk(n) {
+      for (var k = n.firstChild; k; k = k.nextSibling) {
+        if (k.nodeType === 3) text += k.nodeValue;
+        else if (k.nodeType === 1) {
+          var t = k.tagName.toUpperCase();
+          if (t === 'BR') { text += '\n'; continue; }
+          if ((t === 'DIV' || t === 'P') && text !== '' && !/\n$/.test(text)) text += '\n';
+          walk(k);
+        }
+      }
+    })(code);
+    text = text.replace(/\u200B/g, '');
+    var idx = text.indexOf('\uE000');
+    if (idx === -1) idx = text.length;
+    text = text.replace(/\uE000/g, '');
+    if (marker.parentNode) marker.parentNode.removeChild(marker);
+    return { code: code, text: text, idx: idx };
+  }
+
+  function mdPreSet(st, text, caret) {
+    /* 끝의 줄바꿈 하나(보이지 않음)를 늘 둠: 커서가 맨 끝 빈 줄에 있을 때도 그 줄이 화면에 보이도록 */
+    if (!/\n$/.test(text) || caret >= text.length) text += '\n';
+    while (st.code.firstChild) st.code.removeChild(st.code.firstChild);
+    var tn = document.createTextNode(text);
+    st.code.appendChild(tn);
+    mdSetCaret(tn, Math.min(caret, text.length));
+  }
+
+  /* 코드 블록 안 Enter: 언제나 줄바꿈 (빈 줄도 그대로).
+     나가기: 마지막 줄에 ``` 를 치고 Enter (마크다운의 닫는 울타리와 같음) · Command+Enter · 마지막 줄에서 ↓ */
+  function mdEnterInPre(pre) {
+    var sel = mdSel();
+    if (sel && !sel.isCollapsed) sel.getRangeAt(0).deleteContents();
+    var st = mdPreFlatten(pre);
+    var before = st.text.slice(0, st.idx), after = st.text.slice(st.idx);
+    var lineStart = before.lastIndexOf('\n') + 1;
+    var curLine = before.slice(lineStart) + after.split('\n')[0];
+    if (/^\s*(`{3,}|~{3,})\s*$/.test(curLine) && /^[^\n]*\n?$/.test(after)) {
+      mdPreSet(st, before.slice(0, lineStart), 0);   /* ``` 줄만 지움 (그 위의 빈 줄은 그대로) */
+      mdLeavePre(pre);
+      return true;
+    }
+    mdPreSet(st, before + '\n' + after, before.length + 1);
+    return true;
+  }
+
+  /* 코드 블록의 마지막 줄에서 ↓: 다음 줄로 (코드 블록이 문서 끝이면 빈 문단을 만듦) */
+  function mdArrowDownInPre() {
+    var sel = mdSel();
+    if (!sel || !sel.isCollapsed) return false;
+    var pre = mdLineBlock();
+    if (!pre || pre.tagName.toUpperCase() !== 'PRE') return false;
+    var r = document.createRange();
+    r.selectNodeContents(mdPreCode(pre));
+    try { r.setStart(sel.anchorNode, sel.anchorOffset); } catch (e) { return false; }
+    var frag = r.cloneContents();
+    var rest = frag.textContent || '';
+    if (frag.querySelector && frag.querySelector('br')) return false;
+    if (rest.replace(/\n$/, '').indexOf('\n') !== -1) return false;     /* 아직 아래 줄이 있음 */
+    mdLeavePre(pre);
+    return true;
+  }
+
+  function mdCellOf(n) {
+    while (n && n !== elLiveEditor) {
+      if (mdIsTag(n, /^(TD|TH)$/i)) return n;
+      n = n.parentNode;
+    }
+    return null;
+  }
+
+  function mdTableOf(cell) {
+    var n = cell;
+    while (n && !mdIsTag(n, /^TABLE$/i)) n = n.parentNode;
+    return n;
+  }
+
+  function mdCellsOfRow(tr) {
+    var out = [];
+    for (var k = tr.firstChild; k; k = k.nextSibling) if (mdIsTag(k, /^(TD|TH)$/i)) out.push(k);
+    return out;
+  }
+
+  function mdAddRow(table, afterTr) {
+    var cols = mdCellsOfRow(table.getElementsByTagName('tr')[0]).length || 1;
+    var tr = document.createElement('tr'), c, ref = mdCellsOfRow(afterTr);
+    for (c = 0; c < cols; c++) {
+      var td = document.createElement('td');
+      if (ref[c] && ref[c].style && ref[c].style.textAlign) td.style.textAlign = ref[c].style.textAlign;
+      td.innerHTML = '<br>';
+      tr.appendChild(td);
+    }
+    if (afterTr.parentNode.tagName.toUpperCase() === 'THEAD') {
+      var tbody = table.getElementsByTagName('tbody')[0];
+      if (!tbody) { tbody = document.createElement('tbody'); table.appendChild(tbody); }
+      tbody.insertBefore(tr, tbody.firstChild);
+    } else {
+      mdInsertAfter(tr, afterTr);
+    }
+    return tr;
+  }
+
+  function mdRowIsEmpty(tr) {
+    var cs = mdCellsOfRow(tr);
+    for (var c = 0; c < cs.length; c++) if ((cs[c].textContent || '').replace(/[\s\u200B\u00A0]/g, '') !== '') return false;
+    return true;
+  }
+
+  /* 표에서 Enter: 아래 칸으로 (마지막 줄이면 새 줄). 마지막 빈 줄에서 Enter 는 표 밖으로 */
+  function mdTableEnter(cell) {
+    var tr = cell.parentNode, table = mdTableOf(cell);
+    var rows = table.getElementsByTagName('tr');
+    var col = mdCellsOfRow(tr).indexOf(cell);
+    var isLast = rows[rows.length - 1] === tr;
+    if (isLast && rows.length > 1 && mdRowIsEmpty(tr)) {
+      tr.parentNode.removeChild(tr);
+      var next = mdNextElement(table);
+      if (!next || !mdIsTag(next, /^(P|DIV|H[1-6])$/i)) {
+        next = document.createElement('p');
+        next.innerHTML = '<br>';
+        mdInsertAfter(next, table);
+      }
+      mdCaretAtStart(next);
+      return true;
+    }
+    var idx;
+    for (idx = 0; idx < rows.length; idx++) if (rows[idx] === tr) break;
+    var below = rows[idx + 1] || mdAddRow(table, tr);
+    var cs = mdCellsOfRow(below);
+    mdCaretAtEnd(cs[Math.min(col, cs.length - 1)]);
+    return true;
+  }
+
+  function mdTableTab(cell, back) {
+    var table = mdTableOf(cell);
+    var all = [], rows = table.getElementsByTagName('tr'), r, k;
+    for (r = 0; r < rows.length; r++) all = all.concat(mdCellsOfRow(rows[r]));
+    k = all.indexOf(cell);
+    if (back) {
+      if (k > 0) mdCaretAtEnd(all[k - 1]);
+      return true;
+    }
+    if (k < all.length - 1) {
+      mdCaretAtEnd(all[k + 1]);
+    } else {
+      var tr = mdAddRow(table, cell.parentNode);
+      mdCaretAtStart(mdCellsOfRow(tr)[0]);
+    }
+    return true;
+  }
+
+  /* | 제목 | 제목 | 줄에서 Enter: 표 만들기 (머리 줄 + 빈 줄 하나) */
+  function mdMakeTable(block, cells) {
+    var table = document.createElement('table');
+    var thead = document.createElement('thead'), tbody = document.createElement('tbody');
+    var hr = document.createElement('tr'), br = document.createElement('tr'), c;
+    for (c = 0; c < cells.length; c++) {
+      var th = document.createElement('th');
+      th.innerHTML = parseInline(cells[c]) || '<br>';
+      hr.appendChild(th);
+      var td = document.createElement('td');
+      td.innerHTML = '<br>';
+      br.appendChild(td);
+    }
+    thead.appendChild(hr);
+    tbody.appendChild(br);
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    block.parentNode.replaceChild(table, block);
+    var next = mdNextElement(table);
+    if (!next) {
+      var p = document.createElement('p');
+      p.innerHTML = '<br>';
+      mdInsertAfter(p, table);
+    }
+    mdCaretAtStart(br.firstChild);
+    return table;
+  }
+
+  function mdHandleEnter() {
+    var sel = mdSel();
+    if (!sel) return false;
+    var block = mdLineBlock();
+    if (!block) return false;
+    var tag = block.tagName.toUpperCase();
+    mdLastAuto = null;
+    if (tag === 'PRE') return mdEnterInPre(block);
+    if (tag === 'TD' || tag === 'TH') return mdTableEnter(block);
+    if (!sel.isCollapsed) return false;
+    var own = mdOwnText(block);
+
+    if (tag === 'LI') {
+      if (own.replace(/\s+/g, '') === '') {
+        if (!mdOutdentLi(block)) {
+          var p = mdLiToParagraph(block);
+          mdCaretAtStart(p);
+        }
+        return true;
+      }
+      mdSplitLi(block);
       return true;
     }
 
-    var ulMatch = rawText.match(/^[-*+]\s(.*)$/);
-    if (ulMatch && block.tagName.toUpperCase() !== 'LI') {
-      var ul2 = document.createElement('ul');
-      var li2 = document.createElement('li');
-      li2.innerHTML = escapeHtml(ulMatch[1]) || '<br>';
-      ul2.appendChild(li2);
-      block.parentNode.replaceChild(ul2, block);
-      placeCaretAtStart(li2);
-      syncEditorToDisk();
-      return true;
+    var trimmed = own.replace(/^\s+|\s+$/g, '');
+    var atEnd = mdTextBefore(block).replace(/\s+$/, '') === own.replace(/\s+$/, '');
+    if (/^(P|DIV)$/.test(tag) && atEnd) {
+      if (/^(?:-{3,}|\*{3,}|_{3,})$/.test(trimmed)) {
+        var hrEl = document.createElement('hr');
+        var nextP = document.createElement('p');
+        nextP.innerHTML = '<br>';
+        block.parentNode.insertBefore(hrEl, block);
+        block.parentNode.replaceChild(nextP, block);
+        mdCaretAtStart(nextP);
+        return true;
+      }
+      var fm = trimmed.match(/^(?:`{3,}|~{3,})([^`]*)$/);
+      if (fm) {
+        mdMakeCodeBlock(block, fm[1].replace(/^\s+|\s+$/g, ''));
+        return true;
+      }
+      if (/^\|.*\|$/.test(trimmed) && trimmed.length >= 3) {
+        var cells = mdSplitTableRow(trimmed);
+        if (cells.length >= 1 && !(cells.length === 1 && cells[0] === '')) {
+          mdMakeTable(block, cells);
+          return true;
+        }
+      }
+      /* 인용 안의 빈 줄에서 Enter: 인용 끝내기 */
+      if (own.replace(/\s+/g, '') === '' && mdIsTag(block.parentNode, /^BLOCKQUOTE$/i)) {
+        mdLiftOut(block, block.parentNode);
+        mdCaretAtStart(block);
+        return true;
+      }
     }
-
     return false;
   }
 
-  function checkInlineMarkdownShortcuts() {
-    var sel = window.getSelection ? window.getSelection() : null;
-    if (!sel || !sel.isCollapsed || !sel.anchorNode || sel.anchorNode.nodeType !== 3) return;
+  /* ---------------- Backspace (줄 맨 앞) ---------------- */
+  function mdHandleBackspace() {
+    var sel = mdSel();
+    if (!sel || !sel.isCollapsed) { mdLastAuto = null; return false; }
+    var block = mdLineBlock();
+    if (!block) { mdLastAuto = null; return false; }
+    var tag = block.tagName.toUpperCase();
+    if (mdTextBefore(block) !== '') { mdLastAuto = null; return false; }
+    if (tag === 'TD' || tag === 'TH') return true;          /* 칸 맨 앞: 칸이 합쳐지지 않게 막음 */
+    if (mdLastAuto && mdUndoAutoFormat(block)) return true;
+    mdLastAuto = null;
+    if (tag === 'LI') {
+      if (!mdOutdentLi(block)) {
+        var p = mdLiToParagraph(block);
+        mdCaretAtStart(p);
+      }
+      return true;
+    }
+    if (/^H[1-6]$/.test(tag)) {
+      var np = mdReplaceBlock(block, document.createElement('p'));
+      mdCaretAtStart(np);
+      return true;
+    }
+    if (tag === 'PRE') {
+      if ((block.textContent || '').replace(/[\s\u200B]/g, '') === '') {
+        var ep = document.createElement('p');
+        ep.innerHTML = '<br>';
+        block.parentNode.replaceChild(ep, block);
+        mdCaretAtStart(ep);
+        return true;
+      }
+      return false;
+    }
+    if (/^(P|DIV)$/.test(tag)) {
+      if (mdIsTag(block.parentNode, /^BLOCKQUOTE$/i)) {
+        mdLiftOut(block, block.parentNode);
+        mdCaretAtStart(block);
+        return true;
+      }
+      /* 표 바로 아래의 빈 줄: 지우고 표의 마지막 칸 끝으로 (표가 망가지지 않도록) */
+      var prev = mdPrevElement(block);
+      if (mdIsTag(prev, /^TABLE$/i) && mdOwnText(block).replace(/\s+/g, '') === '') {
+        block.parentNode.removeChild(block);
+        var cs = prev.getElementsByTagName('td');
+        if (!cs.length) cs = prev.getElementsByTagName('th');
+        if (cs.length) mdCaretAtEnd(cs[cs.length - 1]);
+        return true;
+      }
+    }
+    return false;
+  }
 
+  /* ---------------- Tab / Shift+Tab ---------------- */
+  function mdHandleTab(back) {
+    var sel = mdSel();
+    if (!sel) return false;
+    mdLastAuto = null;
+    var cell = mdCellOf(sel.anchorNode);
+    if (cell) return mdTableTab(cell, back);
+    var block = mdLineBlock();
+    if (!block) return false;
+    var li = block;
+    while (li && li !== elLiveEditor && !mdIsTag(li, /^LI$/i)) li = li.parentNode;
+    if (!li || li === elLiveEditor) return false;
+    if (back) mdOutdentLi(li);
+    else mdIndentLi(li);
+    return true;   /* 목록 안에서는 (더 들여 쓸 수 없어도) 탭 문자를 넣지 않음 */
+  }
+
+  /* ---------------- 닫는 기호를 치는 순간 바뀌는 글자 서식 ---------------- */
+  var MD_INLINE_RULES = [
+    { re: /\[\[([^\[\]\n]+)\]\]$/, kind: 'wiki' },
+    { re: /\[([^\[\]\n]+)\]\(([^()\s]+)\)$/, kind: 'link' },
+    { re: /`([^`\n]+)`$/, kind: 'code' },
+    { re: /(^|[^*\\])\*\*\*([^\s*](?:[^*]*?[^\s*])?)\*\*\*$/, kind: 'bolditalic', pre: true },
+    { re: /(^|[^*\\])\*\*([^\s*](?:[^*]*?[^\s*])?)\*\*$/, kind: 'strong', pre: true },
+    { re: new RegExp('(^|[^' + MD_WORD + '\\\\])__([^\\s_](?:[^_]*?[^\\s_])?)__$'), kind: 'strong', pre: true },
+    { re: /(^|[^~\\])~~([^\s~](?:[^~]*?[^\s~])?)~~$/, kind: 'del', pre: true },
+    { re: /(^|[^=\\])==([^\s=](?:[^=]*?[^\s=])?)==$/, kind: 'mark', pre: true },
+    { re: /(^|[^*\\])\*([^\s*](?:[^*]*?[^\s*])?)\*$/, kind: 'em', pre: true },
+    { re: new RegExp('(^|[^' + MD_WORD + '\\\\])_([^\\s_](?:[^_]*?[^\\s_])?)_$'), kind: 'em', pre: true }
+  ];
+
+  function mdInlineShortcut() {
+    var sel = mdSel();
+    if (!sel || !sel.isCollapsed || sel.anchorNode.nodeType !== 3) return false;
     var textNode = sel.anchorNode;
+    /* 코드 블록 · 인라인 코드 · 링크 안에서는 바꾸지 않음 */
+    for (var up = textNode.parentNode; up && up !== elLiveEditor; up = up.parentNode) {
+      if (mdIsTag(up, /^(PRE|CODE|A)$/i)) return false;
+    }
     var text = textNode.nodeValue;
     var offset = sel.anchorOffset;
     var beforeCaret = text.slice(0, offset);
     var afterCaret = text.slice(offset);
-
-    var wikiMatch = beforeCaret.match(/\[\[([^\[\]\n]+)\]\]$/);
-    if (wikiMatch) {
-      var linkTitle = wikiMatch[1];
-      var prefix = beforeCaret.slice(0, wikiMatch.index);
-      var span = document.createElement('span');
-      span.className = 'wiki-tag';
-      span.setAttribute('contenteditable', 'false');
-      span.setAttribute('data-wikilink', linkTitle);
-      span.innerHTML = '[[' + escapeHtml(linkTitle) + ']]';
-
-      var parent = textNode.parentNode;
-      var beforeNode = document.createTextNode(prefix);
-      var afterNode = document.createTextNode('\u00A0' + afterCaret);
-      parent.insertBefore(beforeNode, textNode);
-      parent.insertBefore(span, textNode);
-      parent.insertBefore(afterNode, textNode);
-      parent.removeChild(textNode);
-
-      var range = document.createRange();
-      range.setStart(afterNode, 1);
-      range.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(range);
-      syncEditorToDisk();
-      return;
+    var i, m = null, rule = null;
+    for (i = 0; i < MD_INLINE_RULES.length; i++) {
+      m = beforeCaret.match(MD_INLINE_RULES[i].re);
+      if (m) { rule = MD_INLINE_RULES[i]; break; }
     }
-
-    var boldMatch = beforeCaret.match(/\*\*([^*]+)\*\*$/);
-    if (boldMatch) {
-      var bText = boldMatch[1];
-      var bPrefix = beforeCaret.slice(0, boldMatch.index);
-      var strong = document.createElement('strong');
-      strong.innerText = bText;
-
-      var bParent = textNode.parentNode;
-      var bBefore = document.createTextNode(bPrefix);
-      var bAfter = document.createTextNode('\u00A0' + afterCaret);
-      bParent.insertBefore(bBefore, textNode);
-      bParent.insertBefore(strong, textNode);
-      bParent.insertBefore(bAfter, textNode);
-      bParent.removeChild(textNode);
-
-      var r2 = document.createRange();
-      r2.setStart(bAfter, 1);
-      r2.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(r2);
-      syncEditorToDisk();
-      return;
+    if (!rule) return false;
+    var start = m.index + (rule.pre ? m[1].length : 0);
+    var content = rule.pre ? m[2] : m[1];
+    if (start > 0 && beforeCaret.charAt(start - 1) === '\\') return false;   /* \` 처럼 역슬래시로 막은 기호 */
+    var el;
+    if (rule.kind === 'wiki') {
+      el = document.createElement('span');
+      el.className = 'wiki-tag';
+      el.setAttribute('contenteditable', 'false');
+      el.setAttribute('data-wikilink', content);
+      el.appendChild(document.createTextNode('[[' + content + ']]'));
+    } else if (rule.kind === 'link') {
+      el = document.createElement('a');
+      el.setAttribute('href', m[2]);
+      el.setAttribute('target', '_blank');
+      el.setAttribute('rel', 'noopener');
+      el.appendChild(document.createTextNode(content));
+    } else if (rule.kind === 'bolditalic') {
+      el = document.createElement('strong');
+      var emIn = document.createElement('em');
+      emIn.appendChild(document.createTextNode(content));
+      el.appendChild(emIn);
+    } else {
+      el = document.createElement(rule.kind);
+      el.appendChild(document.createTextNode(content));
     }
+    var parent = textNode.parentNode;
+    var beforeNode = document.createTextNode(beforeCaret.slice(0, start));
+    /* 서식 뒤에서 이어 치는 글자가 서식 안으로 들어가지 않도록, 보이지 않는 글자(폭 0) 하나를 둠 (저장할 때는 빠짐) */
+    var afterNode = document.createTextNode('\u200B' + afterCaret);
+    parent.insertBefore(beforeNode, textNode);
+    parent.insertBefore(el, textNode);
+    parent.insertBefore(afterNode, textNode);
+    parent.removeChild(textNode);
+    if (beforeNode.nodeValue === '') parent.removeChild(beforeNode);
+    mdSetCaret(afterNode, 1);
+    return true;
+  }
 
-    var codeMatch = beforeCaret.match(/`([^`\n]+)`$/);
-    if (codeMatch) {
-      var cText = codeMatch[1];
-      var cPrefix = beforeCaret.slice(0, codeMatch.index);
-      var codeEl = document.createElement('code');
-      codeEl.innerText = cText;
+  /* 예전 이름 (다른 곳에서 부르는 경우 대비) */
+  function checkInlineMarkdownShortcuts() { return mdInlineShortcut(); }
+  function checkBlockMarkdownShortcutOnSpace() { return mdBlockShortcut(); }
 
-      var cParent = textNode.parentNode;
-      var cBefore = document.createTextNode(cPrefix);
-      var cAfter = document.createTextNode('\u00A0' + afterCaret);
-      cParent.insertBefore(cBefore, textNode);
-      cParent.insertBefore(codeEl, textNode);
-      cParent.insertBefore(cAfter, textNode);
-      cParent.removeChild(textNode);
-
-      var r3 = document.createRange();
-      r3.setStart(cAfter, 1);
-      r3.collapse(true);
-      sel.removeAllRanges();
-      sel.addRange(r3);
-      syncEditorToDisk();
+  /* ---------------- 일반 텍스트 붙여넣기: 마크다운이면 서식으로 ---------------- */
+  function mdHandlePaste(e) {
+    var cd = e.clipboardData;
+    if (!cd || !cd.getData) return false;
+    var types = cd.types || [], hasHtml = false, hasText = false, i;
+    for (i = 0; i < types.length; i++) {
+      if (types[i] === 'text/html') hasHtml = true;
+      if (types[i] === 'text/plain' || types[i] === 'public.utf8-plain-text' || types[i] === 'NSStringPboardType') hasText = true;
     }
+    if (hasHtml) return false;          /* 서식 있는 글(다른 앱 · 이 편집기에서 복사)은 원래대로 */
+    var text = cd.getData('text/plain');
+    if (!text && !hasText) return false;
+    if (!text) return false;
+    text = text.replace(/\r\n?/g, '\n');
+    var block = mdLineBlock();
+    if (block && block.tagName.toUpperCase() === 'PRE') {
+      e.preventDefault();
+      document.execCommand('insertText', false, text);
+      return true;
+    }
+    if (block && /^(TD|TH)$/i.test(block.tagName)) {
+      e.preventDefault();
+      document.execCommand('insertText', false, text.replace(/\s*\n\s*/g, ' '));
+      return true;
+    }
+    var html;
+    if (text.indexOf('\n') === -1) {
+      html = parseInline(text);
+      if (html === escapeHtml(text)) return false;
+    } else {
+      html = parseMarkdownToHTML(text);
+    }
+    e.preventDefault();
+    document.execCommand('insertHTML', false, html);
+    return true;
   }
 
   /* 4. 기본 '하단 추가(Append)' 순서 보존 엔진 & 설정 저장 */
@@ -2803,16 +4133,169 @@ html_content = r'''<!DOCTYPE html>
     elNoteCountBadge.innerHTML = String(state.notes.length);
   }
 
+  /* ==========================================================================
+     v2.9 줄 수 = 화면에 실제로 보이는 줄 수
+     - 예전에는 Enter 개수(문단 수)를 셌기 때문에, 창 폭 때문에 자동으로 넘어간 줄이 빠졌습니다.
+     - 이제 글자 줄 상자(Range.getClientRects)를 위에서부터 모아 같은 높이끼리 한 줄로 묶어 셉니다.
+       (인쇄 쪽 나누기와 같은 방식: 글자 상자의 가운데 60% 를 '몸통'으로 봄)
+       빈 줄(빈 문단 · 빈 목록 항목 · 빈 표 칸)은 한 줄, 코드 블록은 높이 ÷ 줄 높이, 구분선은 줄이 아님.
+     - 원고지(칸): 20칸 한 줄 기준의 줄 수 (원고지에 그려진 그대로)
+     - 창 크기 · 사이드바 · 글꼴 스타일이 바뀌면 다시 셉니다.
+     ========================================================================== */
+  var statsText = '';
+  var statsVersion = 0;
+  var lineCountTimer = null;
+  var lineCountSig = '';
+  var lineCountCost = 0;   /* 지난번 세는 데 걸린 시간(ms): 긴 글 · 느린 Mac 에서는 입력이 멈춘 뒤 조금 더 기다렸다 셈 */
+
+  function mdPx(v, fallback) {
+    var n = parseFloat(v);
+    return isNaN(n) ? fallback : n;
+  }
+
+  function countVisualLines(root) {
+    if (!root || !document.createRange || !root.getClientRects || !root.getClientRects().length) return -1;
+    var range = document.createRange();
+    if (!range.getClientRects) return -1;
+    var cores = [], extra = 0;
+
+    function addBand(top, bottom) {
+      var h = bottom - top;
+      if (h <= 0.5) return;
+      cores.push([top + h * 0.2, bottom - h * 0.2]);
+    }
+    function addRect(r) {
+      if (r.right - r.left <= 0.5) return;
+      addBand(r.top, r.bottom);
+    }
+    /* 빈 줄: 그 요소의 첫 줄 자리 */
+    function addEmptyLine(el) {
+      var r = el.getBoundingClientRect();
+      if (r.bottom - r.top <= 0.5) return;
+      var cs = window.getComputedStyle ? window.getComputedStyle(el, null) : null;
+      var pt = cs ? mdPx(cs.paddingTop, 0) + mdPx(cs.borderTopWidth, 0) : 0;
+      var fs = cs ? mdPx(cs.fontSize, 15) : 15;
+      var lh = cs ? mdPx(cs.lineHeight, fs * 1.4) : fs * 1.4;
+      var top = r.top + pt, bottom = Math.min(r.bottom, top + lh);
+      addBand(top, bottom);
+    }
+    function preLines(pre) {
+      var cs = window.getComputedStyle ? window.getComputedStyle(pre, null) : null;
+      var fs = cs ? mdPx(cs.fontSize, 13) : 13;
+      var lh = cs ? mdPx(cs.lineHeight, fs * 1.5) : fs * 1.5;
+      var h = pre.clientHeight - (cs ? mdPx(cs.paddingTop, 0) + mdPx(cs.paddingBottom, 0) : 0);
+      var t = String(pre.textContent || '').replace(/\n$/, '');
+      var logical = t === '' ? 1 : t.split('\n').length;
+      if (!(lh > 0) || !(h > 0)) return logical;
+      return Math.max(logical, Math.round(h / lh));
+    }
+    function walk(el) {
+      var has = false, hasBlock = false, k, tag, rs, i;
+      for (k = el.firstChild; k; k = k.nextSibling) {
+        if (k.nodeType === 3) {
+          if (!/[^\s\u00A0\u200B]/.test(k.nodeValue)) continue;
+          range.selectNodeContents(k);
+          rs = range.getClientRects();
+          for (i = 0; i < rs.length; i++) addRect(rs[i]);
+          has = true;
+        } else if (k.nodeType === 1) {
+          tag = k.tagName.toUpperCase();
+          if (tag === 'PRE') { extra += preLines(k); has = true; hasBlock = true; continue; }
+          if (tag === 'HR') { hasBlock = true; continue; }
+          if (tag === 'BR' || tag === 'INPUT' || tag === 'SCRIPT' || tag === 'STYLE') continue;
+          if (tag === 'IMG') { addRect(k.getBoundingClientRect()); has = true; continue; }
+          if (walk(k)) has = true;
+          if (mdIsBlock(k)) hasBlock = true;
+        }
+      }
+      if (!has && !hasBlock && el !== root && mdIsTag(el, /^(P|DIV|H[1-6]|LI|TD|TH|BLOCKQUOTE)$/i)) {
+        if (el.getClientRects().length) {
+          addEmptyLine(el);
+          return true;
+        }
+      }
+      return has;
+    }
+    walk(root);
+    cores.sort(function (x, y) { return x[0] - y[0]; });
+    var n = 0, curB = -1e9, i2;
+    for (i2 = 0; i2 < cores.length; i2++) {
+      if (cores[i2][0] <= curB) {
+        if (cores[i2][1] > curB) curB = cores[i2][1];
+      } else {
+        n++;
+        curB = cores[i2][1];
+      }
+    }
+    return n + extra;
+  }
+
+  function gridVisualRows(text) {
+    if (!text) return 0;
+    var lay = (gridLayout && gridLayoutText === text) ? gridLayout : computeGridLayout(text);
+    return lay && lay.rows ? lay.rows.length : 0;
+  }
+
+  function lineCountSignature() {
+    if (isGridMode()) return 'g|' + statsVersion;
+    return 'l|' + statsVersion + '|' + elLiveEditor.offsetWidth + '|' + elLiveEditor.className.replace(/\b(typing-now|active-focus-block)\b/g, '');
+  }
+
+  function refreshLineCount() {
+    lineCountTimer = null;
+    var t0 = new Date().getTime();
+    var text = statsText;
+    var paras = text ? text.split('\n').length : 0;
+    var n, tip;
+    if (!text) {
+      n = 0;
+      tip = '화면에 보이는 줄 수';
+    } else if (isGridMode()) {
+      n = gridVisualRows(text);
+      tip = '원고지 칸 기준 줄 수 (한 줄 20칸) · 원고지 ' + Math.max(1, Math.ceil(n / GRID_ROWS_PER_PAGE)) + '장 · 문단(Enter) ' + paras + '개';
+    } else {
+      n = countVisualLines(elLiveEditor);
+      if (n < 0) {
+        n = paras;
+        tip = '문단(Enter) 수 (화면 배치를 읽을 수 없을 때)';
+      } else {
+        tip = '화면에 보이는 줄 수 (창 폭 때문에 자동으로 넘어간 줄 포함) · 문단(Enter) ' + paras + '개';
+      }
+    }
+    elStatLines.innerHTML = n + ' 줄';
+    elStatLines.title = tip;
+    lineCountSig = lineCountSignature();
+    lineCountCost = new Date().getTime() - t0;
+  }
+
+  function scheduleLineCount(delay) {
+    if (lineCountTimer) clearTimeout(lineCountTimer);
+    if (delay == null) delay = Math.max(220, Math.min(2000, lineCountCost * 5));
+    lineCountTimer = setTimeout(refreshLineCount, delay);
+  }
+
+  /* 창 크기 · 사이드바 · 스타일 · 집중 모드처럼 줄바꿈이 달라지는 변화를 놓치지 않도록 가볍게 살핌 */
+  setInterval(function () {
+    if (lineCountTimer) return;
+    if (lineCountSignature() !== lineCountSig) scheduleLineCount(0);
+  }, 1200);
+
   function updateStats(text) {
     var content = text || '';
-    var lines = content ? content.split('\n').length : 0;
     var trimmed = content.trim();
     var words = trimmed ? trimmed.split(/\s+/).length : 0;
     var chars = content.length;
+    if (content !== statsText) statsVersion++;
+    statsText = content;
 
-    elStatLines.innerHTML = lines + ' 줄';
     elStatWords.innerHTML = words + ' 단어';
     elStatChars.innerHTML = chars + ' 글자';
+    if (!content) {
+      if (lineCountTimer) { clearTimeout(lineCountTimer); lineCountTimer = null; }
+      refreshLineCount();
+    } else {
+      scheduleLineCount();
+    }
   }
 
   function renderActiveNote() {
@@ -2843,6 +4326,7 @@ html_content = r'''<!DOCTYPE html>
       elLiveEditor.innerHTML = parseMarkdownToHTML(note.content);
     }
     updateStats(note.content);
+    scheduleLineCount(0);
     updateFocusAndTypewriterScroll();
   }
 
@@ -3838,7 +5322,7 @@ html_content = r'''<!DOCTYPE html>
     var ls = (s > 0) ? (v.lastIndexOf('\n', s - 1) + 1) : 0;
     var le = v.indexOf('\n', ls);
     if (le === -1) le = v.length;
-    var m = v.slice(ls, le).match(/^(#{1,6}\s+|>\s?|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+)/);
+    var m = v.slice(ls, le).match(/^(#{1,6}\s+|>\s?|[-*+]\s+\[[ xX]\]\s+|[-*+]\s+|\d{1,3}[.)]\s+)/);
     var oldLen = m ? m[0].length : 0;
     if (oldLen === 0 && !prefix) return;
     if (m && m[0] === prefix) return;
@@ -3866,7 +5350,9 @@ html_content = r'''<!DOCTYPE html>
     else if (action === 'strike') gridWrapSelection('~~', '~~', '취소선');
     else if (action === 'quote') gridSetLinePrefix('> ');
     else if (action === 'ul') gridSetLinePrefix('- ');
+    else if (action === 'ol') gridSetLinePrefix('1. ');
     else if (action === 'task') gridSetLinePrefix('- [ ] ');
+    else if (action === 'table') gridInsertBlock('| 제목 1 | 제목 2 |\n| --- | --- |\n|  |  |');
     else if (action === 'code') gridWrapSelection('```\n', '\n```', '코드를 입력하세요');
     else if (action === 'wikilink') gridWrapSelection('[[', ']]', '연결할 노트 제목');
     else if (action === 'hr') gridInsertBlock('---');
@@ -4562,6 +6048,7 @@ html_content = r'''<!DOCTYPE html>
 
   elLiveEditor.onclick = function (e) {
     state.selectionTargetType = 'note';
+    mdLastAuto = null;
     updateFocusAndTypewriterScroll();
     var target = e.target || e.srcElement;
     if (!target) return;
@@ -4615,57 +6102,66 @@ html_content = r'''<!DOCTYPE html>
       triggerTypewriterSound(key);
     }
 
-    if (key === 9) {
+    /* v2.9: 방금 자동 변환한 줄 기억은 Backspace 가 아닌 다른 키를 누르면 잊음 */
+    if (key !== 8 && key !== 16 && key !== 17 && key !== 18 && key !== 91 && key !== 93 && key !== 229) mdLastAuto = null;
+    mdSpaceTyped = (key === 32 && !state.isComposing);
+
+    if (key === 9 && !e.metaKey && !e.ctrlKey && !e.altKey) {
       e.preventDefault();
-      document.execCommand('insertText', false, '    ');
+      if (!mdHandleTab(e.shiftKey) && !e.shiftKey) {
+        document.execCommand('insertText', false, '    ');
+      }
       syncEditorToDisk();
+      updateFocusAndTypewriterScroll();
       return;
     }
 
-    if (key === 13 && !e.shiftKey && !state.isComposing) {
-      var block = getActiveBlockElement();
-      if (block) {
-        var raw = (block.innerText || block.textContent || '').replace(/\u00A0/g, ' ').trim();
-        if (raw === '---' || raw === '***') {
-          e.preventDefault();
-          var hr = document.createElement('hr');
-          var nextP = document.createElement('p');
-          nextP.innerHTML = '<br>';
-          block.parentNode.insertBefore(hr, block);
-          block.parentNode.replaceChild(nextP, block);
-          placeCaretAtStart(nextP);
-          syncEditorToDisk();
-          updateFocusAndTypewriterScroll();
-          return;
-        }
+    /* 코드 블록 안 Shift+Enter 도 줄바꿈 글자로 */
+    if (key === 13 && e.shiftKey && !e.metaKey && !e.ctrlKey && !state.isComposing) {
+      var preShift = mdLineBlock();
+      if (preShift && preShift.tagName.toUpperCase() === 'PRE') {
+        e.preventDefault();
+        mdEnterInPre(preShift);
+        syncEditorToDisk();
+        updateFocusAndTypewriterScroll();
+        return;
+      }
+    }
 
-        if (block.tagName.toUpperCase() === 'LI' && block.className.indexOf('task-item') !== -1) {
+    if (key === 13 && !e.shiftKey && !e.altKey && !state.isComposing) {
+      if (e.metaKey || e.ctrlKey) {
+        /* Command + Enter: 코드 블록에서 바로 나가기 */
+        var preBlock = mdLineBlock();
+        if (preBlock && preBlock.tagName.toUpperCase() === 'PRE') {
           e.preventDefault();
-          if (raw === '') {
-            var ulParent = block.parentNode;
-            var outP = document.createElement('p');
-            outP.innerHTML = '<br>';
-            ulParent.parentNode.insertBefore(outP, ulParent.nextSibling);
-            ulParent.removeChild(block);
-            if (ulParent.children.length === 0) ulParent.parentNode.removeChild(ulParent);
-            placeCaretAtStart(outP);
-          } else {
-            var newLi = document.createElement('li');
-            newLi.className = 'task-item';
-            var newCb = document.createElement('input');
-            newCb.type = 'checkbox';
-            newCb.setAttribute('contenteditable', 'false');
-            var newSp = document.createElement('span');
-            newSp.innerHTML = '<br>';
-            newLi.appendChild(newCb);
-            newLi.appendChild(newSp);
-            block.parentNode.insertBefore(newLi, block.nextSibling);
-            placeCaretAtStart(newSp);
-          }
+          mdLeavePre(preBlock);
           syncEditorToDisk();
           updateFocusAndTypewriterScroll();
-          return;
         }
+        return;
+      }
+      if (mdHandleEnter()) {
+        e.preventDefault();
+        syncEditorToDisk();
+        updateFocusAndTypewriterScroll();
+        return;
+      }
+    }
+
+    if (key === 40 && !e.shiftKey && !e.metaKey && !e.ctrlKey && !e.altKey && !state.isComposing) {
+      if (mdArrowDownInPre()) {
+        e.preventDefault();
+        updateFocusAndTypewriterScroll();
+        return;
+      }
+    }
+
+    if (key === 8 && !e.metaKey && !e.ctrlKey && !e.altKey && !e.shiftKey && !state.isComposing) {
+      if (mdHandleBackspace()) {
+        e.preventDefault();
+        syncEditorToDisk();
+        updateFocusAndTypewriterScroll();
+        return;
       }
     }
   };
@@ -4674,12 +6170,13 @@ html_content = r'''<!DOCTYPE html>
     if (state.isComposing) return;
     var key = e.keyCode || e.which;
     if (key === 32) {
-      if (checkBlockMarkdownShortcutOnSpace()) {
+      if (mdBlockShortcut()) {
+        syncEditorToDisk();
         updateFocusAndTypewriterScroll();
         return;
       }
     }
-    checkInlineMarkdownShortcuts();
+    mdInlineShortcut();
     syncEditorToDisk();
     updateFocusAndTypewriterScroll();
   };
@@ -4687,9 +6184,26 @@ html_content = r'''<!DOCTYPE html>
   elLiveEditor.oninput = function () {
     markTypingActivity();
     if (state.isComposing) return;
+    if (mdSpaceTyped) {
+      mdSpaceTyped = false;
+      mdBlockShortcut();
+    }
+    mdInlineShortcut();
     syncEditorToDisk();
     updateFocusAndTypewriterScroll();
   };
+
+  /* v2.9: 일반 텍스트(마크다운)를 붙여 넣으면 서식으로 */
+  elLiveEditor.addEventListener('paste', function (e) {
+    if (isGridMode()) return;
+    try {
+      if (mdHandlePaste(e)) {
+        mdLastAuto = null;
+        syncEditorToDisk();
+        updateFocusAndTypewriterScroll();
+      }
+    } catch (err) {}
+  }, false);
 
   elFormatToolbar.onclick = function (e) {
     var target = e.target || e.srcElement;
@@ -4714,6 +6228,11 @@ html_content = r'''<!DOCTYPE html>
     else if (action === 'strike') document.execCommand('strikeThrough', false, null);
     else if (action === 'quote') document.execCommand('formatBlock', false, 'BLOCKQUOTE');
     else if (action === 'ul') document.execCommand('insertUnorderedList', false, null);
+    else if (action === 'ol') document.execCommand('insertOrderedList', false, null);
+    else if (action === 'table') {
+      document.execCommand('insertHTML', false, '<table><thead><tr><th>제목 1</th><th>제목 2</th></tr></thead>' +
+        '<tbody><tr><td><br></td><td><br></td></tr></tbody></table><p><br></p>');
+    }
     else if (action === 'task') {
       document.execCommand('insertHTML', false, '<ul><li class="task-item"><input type="checkbox" contenteditable="false"><span>할 일 항목</span></li></ul>');
     } else if (action === 'code') {
@@ -5645,6 +7164,7 @@ html_content = r'''<!DOCTYPE html>
   }, false);
   window.addEventListener('resize', function () {
     ctxClose();
+    scheduleLineCount(120);
   }, false);
 
   window.TypeGrapherApp = {
@@ -5667,7 +7187,35 @@ html_content = r'''<!DOCTYPE html>
     /* 진단용: 조판 레이아웃으로 바꾸고 조판 작업(JSON)을 돌려준다. 확인 후 반드시 printLayoutEnd() 호출 */
     printLayoutBegin: function (target) { return JSON.stringify(printEnter(state.printOpts, target === 'pad' ? 'pad' : 'note')); },
     printLayoutEnd: function () { printExit(); },
-    syncVault: function () { document.getElementById('btnSyncVault').click(); }
+    syncVault: function () { document.getElementById('btnSyncVault').click(); },
+    /* 진단용: 마크다운 → 화면 → 마크다운 (화면 편집기와 같은 스타일로 붙였다가 떼어 냄) */
+    mdRoundTrip: function (md) {
+      var box = document.createElement('div');
+      box.className = elLiveEditor.className;
+      box.style.position = 'absolute';
+      box.style.left = '-10000px';
+      box.style.top = '0';
+      box.style.width = '700px';
+      document.body.appendChild(box);
+      box.innerHTML = parseMarkdownToHTML(String(md));
+      var out = serializeDOMToMarkdown(box);
+      document.body.removeChild(box);
+      return out;
+    },
+    mdToHtml: function (md) { return parseMarkdownToHTML(String(md)); },
+    htmlToMd: function (html) {
+      var box = document.createElement('div');
+      box.className = elLiveEditor.className;
+      box.style.position = 'absolute';
+      box.style.left = '-10000px';
+      box.style.width = '700px';
+      document.body.appendChild(box);
+      box.innerHTML = String(html);
+      var out = serializeDOMToMarkdown(box);
+      document.body.removeChild(box);
+      return out;
+    },
+    countScreenLines: function () { return isGridMode() ? gridVisualRows(getEditorMarkdown()) : countVisualLines(elLiveEditor); }
   };
 
   window.onload = function () {
@@ -7844,8 +9392,8 @@ plist_dict = {
     "CFBundleName": "TypeGrapher",
     "CFBundleDisplayName": "TypeGrapher",
     "CFBundlePackageType": "APPL",
-    "CFBundleShortVersionString": "2.8",
-    "CFBundleVersion": "11",
+    "CFBundleShortVersionString": "2.9",
+    "CFBundleVersion": "12",
     "LSMinimumSystemVersion": "10.7",
     "NSHighResolutionCapable": True,
     "NSDocumentsFolderUsageDescription": "TypeGrapher가 파인더의 [문서 > TypeGrapher] 폴더 안에 마크다운(.md) 일기 및 노트를 저장하기 위해 접근 권한이 필요합니다.",
@@ -7890,7 +9438,7 @@ subprocess.run([
 subprocess.run(["/tmp/gen_skeuo_icon", master_png, dmg_path, found_user_png or ""], check=False)
 
 shutil.rmtree(stage_dir)
-print("✅ TypeGrapher 2.8 빌드 완료!")
+print("✅ TypeGrapher 2.9 빌드 완료!")
 subprocess.run(["open", installed_app])
 PYEOF
-python3 /tmp/build_typegrapher_v28.py
+python3 /tmp/build_typegrapher_v29.py
